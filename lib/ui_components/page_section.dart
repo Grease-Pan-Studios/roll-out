@@ -1,6 +1,7 @@
 
 import 'package:amaze_game/services/haptic_engine_service.dart';
 import 'package:amaze_game/services/audio_player_service.dart';
+import 'package:amaze_game/services/storage_service.dart';
 import 'package:amaze_game/states/settings_state.dart';
 import 'package:flutter/material.dart';
 
@@ -17,6 +18,7 @@ class PageSection extends StatelessWidget {
   final double hue;
   final GameState gameState;
   final SettingsState settingsState;
+  final StorageService storageService;
   final SectionLogic sectionLogic;
   final ColorPaletteLogic colorPalette;
   final HapticEngineService hapticEngine;
@@ -27,6 +29,7 @@ class PageSection extends StatelessWidget {
     required this.hue,
     required this.gameState,
     required this.settingsState,
+    required this.storageService,
     required this.sectionLogic,
     required this.hapticEngine,
     required this.audioPlayer,
@@ -75,6 +78,7 @@ class PageSection extends StatelessWidget {
                     mazeLogic: mazeLogic,
                     levelIndex: index,
                     colorPalette: colorPalette,
+                    storageService: storageService,
                     levelState: gameState.getLevelState(
                       sectionLogic: sectionLogic,
                       levelIndex: index,

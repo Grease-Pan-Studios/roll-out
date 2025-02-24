@@ -6,6 +6,7 @@ import 'package:amaze_game/logical/section_logic.dart';
 import 'package:amaze_game/pages/level_page.dart';
 import 'package:amaze_game/services/audio_player_service.dart';
 import 'package:amaze_game/services/haptic_engine_service.dart';
+import 'package:amaze_game/services/storage_service.dart';
 import 'package:amaze_game/states/settings_state.dart';
 import 'package:flutter/material.dart';
 
@@ -26,6 +27,7 @@ class LevelTile extends StatelessWidget {
   SectionLogic sectionLogic;
   MazeLogic mazeLogic;
   ColorPaletteLogic colorPalette;
+  StorageService storageService;
 
   late Color bgColor;
   late Color borderColor;
@@ -38,6 +40,7 @@ class LevelTile extends StatelessWidget {
     super.key,
     required this.gameState,
     required this.settingsState,
+    required this.storageService,
     required this.hapticEngine,
     required this.audioPlayer,
     required this.sectionLogic,
@@ -117,6 +120,8 @@ class LevelTile extends StatelessWidget {
               audioPlayer: audioPlayer,
               mazeLogic: mazeLogic,
               colorPalette: colorPalette,
+              storageService: storageService,
+              settingsState: settingsState,
             )),
           );
 

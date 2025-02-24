@@ -1,5 +1,6 @@
 
 import 'package:amaze_game/logical/color_palette_logic.dart';
+import 'package:amaze_game/services/haptic_engine_service.dart';
 import 'package:flutter/material.dart';
 
 import 'package:amaze_game/input_elements/button.dart';

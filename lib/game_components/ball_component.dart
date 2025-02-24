@@ -73,8 +73,8 @@ class BallComponent extends BodyComponent with ContactCallbacks {
       audioPlayer.playSfxSound(volume: deltaVelocity / 10);
     }
 
-    if (deltaVelocity > 3){
-      hapticEngine.vibrate(type: HapticsType.soft);
+    if (deltaVelocity > 0.1){
+      hapticEngine.vibrate(amplitude: (deltaVelocity * 100).toInt());
     }
 
   }

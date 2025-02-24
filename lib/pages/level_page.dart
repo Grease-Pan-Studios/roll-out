@@ -5,11 +5,14 @@ import 'package:amaze_game/logical/section_logic.dart';
 
 import 'package:amaze_game/services/haptic_engine_service.dart';
 import 'package:amaze_game/services/audio_player_service.dart';
+import 'package:amaze_game/services/storage_service.dart';
 
 import 'package:amaze_game/states/game_state.dart';
 import 'package:amaze_game/states/level_state.dart';
+import 'package:amaze_game/states/settings_state.dart';
 
 import 'package:amaze_game/ui_components/level_completion_card.dart';
+import 'package:amaze_game/ui_components/settings_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flame/game.dart';
 
@@ -26,6 +29,9 @@ class LevelPage extends StatefulWidget {
   final AudioPlayerService audioPlayer;
   final ColorPaletteLogic colorPalette;
 
+  final SettingsState settingsState;
+  final StorageService storageService;
+
   const LevelPage({
     super.key,
     required this.levelIndex,
@@ -35,6 +41,8 @@ class LevelPage extends StatefulWidget {
     required this.colorPalette,
     required this.audioPlayer,
     required this.hapticEngine,
+    required this.settingsState,
+    required this.storageService,
   });
 
   @override
@@ -53,6 +61,8 @@ class _LevelPageState extends State<LevelPage> with SingleTickerProviderStateMix
   late Animation<double> _opacityAnimation;
   late LevelCompletionCard levelCompletionCard;
   late VoidCallback? _nextLevelCallback;
+
+  late MyGame _game;
 
   @override
   void initState(){
@@ -85,15 +95,18 @@ class _LevelPageState extends State<LevelPage> with SingleTickerProviderStateMix
 
     if (widget.sectionLogic.isNextLevel(widget.levelIndex)){
       _nextLevelCallback = (){
+        widget.hapticEngine.selection();
         Navigator.pushReplacement(context,
           MaterialPageRoute(builder: (context) => LevelPage(
               levelIndex: widget.levelIndex + 1,
               sectionLogic: widget.sectionLogic,
               audioPlayer: widget.audioPlayer,
+              settingsState: widget.settingsState,
               hapticEngine: widget.hapticEngine,
               gameState: widget.gameState,
               mazeLogic: widget.mazeLogic,
               colorPalette: widget.colorPalette,
+              storageService: widget.storageService,
             )
           )
         );
@@ -101,6 +114,14 @@ class _LevelPageState extends State<LevelPage> with SingleTickerProviderStateMix
     }else{
       _nextLevelCallback = null;
     }
+
+    _game = MyGame(
+      mazeLogic: widget.mazeLogic,
+      colorPalette: widget.colorPalette,
+      hapticEngine: widget.hapticEngine,
+      audioPlayer: widget.audioPlayer,
+      exitGameCallback: _triggerExit,
+    );
 
   }
 
@@ -153,11 +174,28 @@ class _LevelPageState extends State<LevelPage> with SingleTickerProviderStateMix
   }
 
   void _exitLevelPage(){
+    widget.hapticEngine.selection();
     Navigator.pop(context);
   }
 
-  void _replayLevel(){
+  void _openSettingsPanel() {
+    widget.hapticEngine.selection();
+    _game.pauseGame();
+    SettingsCard.open(
+      context,
+      widget.colorPalette,
+      widget.settingsState,
+      widget.storageService,
+      widget.hapticEngine,
+      onExit: (){
+        _game.resumeGame();
+      }
+    );
 
+  }
+
+  void _replayLevel(){
+    widget.hapticEngine.selection();
     Navigator.pushReplacement(context,
       MaterialPageRoute(builder: (context) => LevelPage(
           levelIndex: widget.levelIndex,
@@ -167,6 +205,8 @@ class _LevelPageState extends State<LevelPage> with SingleTickerProviderStateMix
           gameState: widget.gameState,
           mazeLogic: widget.mazeLogic,
           colorPalette: widget.colorPalette,
+          settingsState: widget.settingsState,
+          storageService: widget.storageService,
         )
       )
     );
@@ -232,7 +272,7 @@ class _LevelPageState extends State<LevelPage> with SingleTickerProviderStateMix
                   size: 45,
                   color: widget.colorPalette.activeElementBorder,
                   semanticLabel: "Settings",
-                ), onPressed: () {  },
+                ), onPressed: _openSettingsPanel,
 
               ),
             )
@@ -264,15 +304,7 @@ class _LevelPageState extends State<LevelPage> with SingleTickerProviderStateMix
 
             ),
            if (_levelComplete == false)
-           GameWidget(
-            game: MyGame(
-                mazeLogic: widget.mazeLogic,
-                colorPalette: widget.colorPalette,
-                hapticEngine: widget.hapticEngine,
-                audioPlayer: widget.audioPlayer,
-                exitGameCallback: _triggerExit,
-              ),
-           ),
+           GameWidget( game: _game ),
 
           ],
         )

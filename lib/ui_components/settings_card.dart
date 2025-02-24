@@ -4,6 +4,7 @@ import 'package:amaze_game/input_elements/toggle_switch.dart';
 import 'package:amaze_game/input_elements/button.dart';
 
 import 'package:amaze_game/logical/color_palette_logic.dart';
+import 'package:amaze_game/services/haptic_engine_service.dart';
 import 'package:amaze_game/services/storage_service.dart';
 import 'package:amaze_game/states/settings_state.dart';
 
@@ -15,12 +16,16 @@ class SettingsCard extends StatefulWidget {
   final ColorPaletteLogic colorPalette;
   final SettingsState settingsState;
   final StorageService storageService;
+  final HapticEngineService hapticEngine;
+  final VoidCallback onExit;
 
   const SettingsCard({
     super.key,
     required this.colorPalette,
     required this.settingsState,
-    required this.storageService
+    required this.storageService,
+    required this.hapticEngine,
+    required this.onExit
   });
 
   @override
@@ -32,6 +37,10 @@ class SettingsCard extends StatefulWidget {
     ColorPaletteLogic colorPalette,
     SettingsState settingsState,
     StorageService storageService,
+    HapticEngineService hapticEngine,
+    {
+      required VoidCallback onExit
+    }
   ){
     showDialog(
       context: context,
@@ -41,10 +50,11 @@ class SettingsCard extends StatefulWidget {
           colorPalette: colorPalette,
           settingsState: settingsState,
           storageService: storageService,
+          hapticEngine: hapticEngine,
+          onExit: onExit
         );
       }
     );
-
   }
 
 
@@ -63,10 +73,10 @@ class _SettingsCardState extends State<SettingsCard> {
   void dispose() {
     print("Settings Card Closed");
 
+    widget.onExit();
     widget.storageService.setSettingsState(
         value: widget.settingsState
     );
-
     super.dispose();
   }
 
@@ -267,6 +277,7 @@ class _SettingsCardState extends State<SettingsCard> {
                   child: Button(
                     text: "Exit Panel",
                     onPressed: (){
+                      widget.hapticEngine.selection();
                       Navigator.pop(context);
                     },
                     colorPalette: widget.colorPalette,

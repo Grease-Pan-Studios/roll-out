@@ -1,6 +1,8 @@
 
 import 'package:amaze_game/states/settings_state.dart';
+
 import 'package:haptic_feedback/haptic_feedback.dart';
+import 'package:vibration/vibration.dart';
 
 class HapticEngineService{
 
@@ -10,29 +12,33 @@ class HapticEngineService{
   late bool canVibrate;
 
   bool _isVibrating = false;
-  int bufferTime = 200; // in milliseconds
+  int bufferTime = 150; // in milliseconds
 
   HapticEngineService({
     required this.settingsState
   });
 
   Future<void> initialize() async{
-    canVibrate = await Haptics.canVibrate();
+    // canVibrate = await Haptics.canVibrate();
+    canVibrate = await Vibration.hasVibrator();
   }
 
-  Future<void> vibrate({required HapticsType type}) async{
-
+  Future<void> vibrate({required int amplitude}) async{
 
     if (_isVibrating
         || !settingsState.hapticEnabled
         || !canVibrate){
       return;
     }
-
     _isVibrating = true;
 
+    amplitude = amplitude.clamp(1, 255);
+
     if (canVibrate){
-      Haptics.vibrate(type);
+      await Vibration.vibrate(
+          duration: 5,
+          amplitude: amplitude
+      );
     }
 
     Future.delayed(Duration(milliseconds: bufferTime), (){
@@ -49,6 +55,14 @@ class HapticEngineService{
       return;
     }
 
-    await vibrate(type: HapticsType.selection);
+    await Vibration.vibrate(
+      duration: 10,
+      amplitude: 15
+    );
   }
+
+
+
+
+
 }

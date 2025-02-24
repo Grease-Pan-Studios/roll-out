@@ -87,14 +87,15 @@ class _LauncherPageState extends State<LauncherPage> {
   Widget build(BuildContext context) {
     return
         _hasLoaded ?
-          _showLogin ? LoginPage(
-            colorPalette: colorPalette,
-            goToGame: () {
-              setState(() {
-                _showLogin = false;
-              });
-            },
-          ): HomePage(
+          // _showLogin ? LoginPage(
+          //   colorPalette: colorPalette,
+          //   goToGame: () {
+          //     setState(() {
+          //       _showLogin = false;
+          //     });
+          //   },
+          // ):
+          HomePage(
               gameLogic: gameLogic,
               gameState: gameState,
               settingsState: settingsState,

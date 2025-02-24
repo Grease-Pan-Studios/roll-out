@@ -71,12 +71,20 @@ class MyGame extends Forge2DGame{
 
   }
 
+  void pauseGame(){
+    stopwatch.stop();
+    pauseEngine();
+  }
+
+  void resumeGame(){
+    stopwatch.start();
+    resumeEngine();
+  }
 
   @override
   Future<void> onLoad() async {
 
     final controller = Controller();
-
 
     final maze = MazeComponent(
         mazeLogic: mazeLogic,

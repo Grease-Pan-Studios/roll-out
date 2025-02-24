@@ -53,7 +53,7 @@ class _LoginPageState extends State<LoginPage> {
           child: Align(
             alignment: Alignment.lerp(
                 Alignment(-0.1, -0.1), // Center
-                Alignment(-0.7, -0.4), // Left ish
+                Alignment(-0.7, -0.5), // Left ish
                 _panelSlide)!
                 .add(Alignment(0, 0.0)),
             child: Text(

@@ -1,6 +1,7 @@
 
 import 'package:amaze_game/services/audio_player_service.dart';
 import 'package:amaze_game/services/haptic_engine_service.dart';
+import 'package:amaze_game/services/storage_service.dart';
 import 'package:flutter/material.dart';
 
 import 'package:amaze_game/logical/page_logic.dart';
@@ -19,10 +20,12 @@ class PathPage extends StatelessWidget {
   final HapticEngineService hapticEngine;
   final AudioPlayerService audioPlayer;
   final ColorPaletteLogic colorPalette;
+  final StorageService storageService;
 
   const PathPage({
     super.key,
     required this.pathwayLogic,
+    required this.storageService,
     required this.gameState,
     required this.settingsState,
     required this.hapticEngine,
@@ -51,6 +54,7 @@ class PathPage extends StatelessWidget {
                     settingsState: settingsState,
                     hapticEngine: hapticEngine,
                     hue: pathwayLogic.hue,
+                    storageService: storageService,
                     colorPalette: colorPalette,
                   );
                 }

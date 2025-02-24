@@ -58,6 +58,8 @@ class _HomePageState extends State<HomePage> {
       widget.colorPalette,
       widget.settingsState,
       widget.storageService,
+      widget.hapticEngine,
+      onExit: () {},
     );
   }
 
@@ -71,11 +73,13 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return SlidingUpPanel(
-
+      color: widget.colorPalette.secondary,
+      parallaxOffset: 0,
       panel: PathPickerPage(
         gameLogic: widget.gameLogic,
         gameState: widget.gameState,
         settingsState: widget.settingsState,
+        storageService: widget.storageService,
         hapticEngine: widget.hapticEngine,
         audioPlayer: widget.audioPlayer,
         colorPalette: widget.colorPalette,
@@ -89,6 +93,7 @@ class _HomePageState extends State<HomePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
+
             Text(
               "Swipe Up To Start",
               style: TextStyle(

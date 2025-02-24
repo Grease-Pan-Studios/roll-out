@@ -14,6 +14,7 @@ import 'package:amaze_game/pages/path_page.dart';
 
 import 'package:amaze_game/states/game_state.dart';
 
+import 'package:amaze_game/services/storage_service.dart';
 
 class PathPickerPage extends StatefulWidget {
 
@@ -23,6 +24,7 @@ class PathPickerPage extends StatefulWidget {
   final HapticEngineService hapticEngine;
   final ColorPaletteLogic colorPalette;
   final AudioPlayerService audioPlayer;
+  final StorageService storageService;
 
   const PathPickerPage({
     super.key,
@@ -32,6 +34,7 @@ class PathPickerPage extends StatefulWidget {
     required this.audioPlayer,
     required this.hapticEngine,
     required this.colorPalette,
+    required this.storageService,
   });
 
   @override
@@ -77,6 +80,7 @@ class _PathPickerPageState extends State<PathPickerPage> {
           final pathwayLogic = widget.gameLogic.pages[index];
           return PathPage(
             pathwayLogic: pathwayLogic,
+            storageService: widget.storageService,
             settingsState: widget.settingsState,
             gameState: widget.gameState,
             hapticEngine: widget.hapticEngine,
