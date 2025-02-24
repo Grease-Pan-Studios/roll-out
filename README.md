@@ -1,16 +1,8 @@
-# amaze_game
+# Roll Out
 
-A new Flutter project.
+A Physics based maze game.
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+This is just a centralized repository for the Roll Out game. 
+The game is developed using the Flutter along with the Flame + Forge2D physics engine.

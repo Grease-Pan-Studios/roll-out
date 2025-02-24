@@ -1,0 +1,283 @@
+
+import 'package:amaze_game/logical/maze_logic.dart';
+import 'package:amaze_game/logical/color_palette_logic.dart';
+import 'package:amaze_game/logical/section_logic.dart';
+
+import 'package:amaze_game/services/haptic_engine_service.dart';
+import 'package:amaze_game/services/audio_player_service.dart';
+
+import 'package:amaze_game/states/game_state.dart';
+import 'package:amaze_game/states/level_state.dart';
+
+import 'package:amaze_game/ui_components/level_completion_card.dart';
+import 'package:flutter/material.dart';
+import 'package:flame/game.dart';
+
+import 'package:amaze_game/my_game.dart';
+
+class LevelPage extends StatefulWidget {
+
+  final int levelIndex;
+  final MazeLogic mazeLogic;
+  final SectionLogic sectionLogic;
+
+  final GameState gameState;
+  final HapticEngineService hapticEngine;
+  final AudioPlayerService audioPlayer;
+  final ColorPaletteLogic colorPalette;
+
+  const LevelPage({
+    super.key,
+    required this.levelIndex,
+    required this.sectionLogic,
+    required this.mazeLogic,
+    required this.gameState,
+    required this.colorPalette,
+    required this.audioPlayer,
+    required this.hapticEngine,
+  });
+
+  @override
+  State<LevelPage> createState() => _LevelPageState();
+}
+
+class _LevelPageState extends State<LevelPage> with SingleTickerProviderStateMixin{
+
+
+  bool _levelComplete = false;
+  int _levelRating = 0;
+  String _levelCompletionTime = "00:00:00";
+
+  late AnimationController _controller;
+  late Animation<Alignment> _alignmentAnimation;
+  late Animation<double> _opacityAnimation;
+  late LevelCompletionCard levelCompletionCard;
+  late VoidCallback? _nextLevelCallback;
+
+  @override
+  void initState(){
+    super.initState();
+
+    _controller = AnimationController(
+      duration: Duration(seconds: 1),
+      vsync: this,
+    );
+
+    _alignmentAnimation = Tween<Alignment>(
+      begin: Alignment(0, 4),
+      end: Alignment(0, -0.25),
+    ).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: Curves.easeOut,
+      ),
+    );
+
+    _opacityAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: Curves.easeOut,
+      ),
+    );
+
+    if (widget.sectionLogic.isNextLevel(widget.levelIndex)){
+      _nextLevelCallback = (){
+        Navigator.pushReplacement(context,
+          MaterialPageRoute(builder: (context) => LevelPage(
+              levelIndex: widget.levelIndex + 1,
+              sectionLogic: widget.sectionLogic,
+              audioPlayer: widget.audioPlayer,
+              hapticEngine: widget.hapticEngine,
+              gameState: widget.gameState,
+              mazeLogic: widget.mazeLogic,
+              colorPalette: widget.colorPalette,
+            )
+          )
+        );
+      };
+    }else{
+      _nextLevelCallback = null;
+    }
+
+  }
+
+  @override
+  void dispose(){
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _triggerExit({
+    required bool isComplete,
+    required int rating,
+    required Duration completionTime,
+  }){
+
+    //TODO: trigger for non-completion is incomplete
+    assert(isComplete == true, "Functionality for non-completion is incomplete.");
+
+    /* Calculating Time */
+    final int time = completionTime.inMilliseconds;
+    final int minutes = (time / 60000).floor();
+    final int seconds = ((time % 60000) / 1000).floor();
+    final int milliseconds = ((time % 1000)/10).floor();
+    _levelCompletionTime = "${minutes.toString().padLeft(2, "0")}:${
+        seconds.toString().padLeft(2,"0")}:${
+        milliseconds.toString().padLeft(2,"0")}";
+
+    _levelComplete = true;
+
+    _levelRating = rating;
+
+    _controller.forward();
+    print("Updated Rating: $rating");
+    setState(() {});
+
+
+    /* Update Level State In Game Logic */
+    widget.gameState.setLevelState(
+      sectionLogic: widget.sectionLogic,
+      levelIndex: widget.levelIndex,
+      levelState: LevelState(
+        state: LevelStateEnum.completed,
+        rating: rating,
+        completionTime: completionTime,
+      ),
+    );
+
+    // levelCompletionCard.updateRating(rating);
+
+  }
+
+  void _exitLevelPage(){
+    Navigator.pop(context);
+  }
+
+  void _replayLevel(){
+
+    Navigator.pushReplacement(context,
+      MaterialPageRoute(builder: (context) => LevelPage(
+          levelIndex: widget.levelIndex,
+          sectionLogic: widget.sectionLogic,
+          hapticEngine: widget.hapticEngine,
+          audioPlayer: widget.audioPlayer,
+          gameState: widget.gameState,
+          mazeLogic: widget.mazeLogic,
+          colorPalette: widget.colorPalette,
+        )
+      )
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: Scaffold(
+        backgroundColor: widget.colorPalette.secondary,
+        appBar: AppBar(
+          toolbarHeight: 120,
+          backgroundColor: widget.colorPalette.secondary,
+          automaticallyImplyLeading: false,
+          centerTitle: true,
+          title: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SizedBox(height: 20),
+                Text(
+                    widget.sectionLogic.sectionName,
+                    style: TextStyle(
+                      fontFamily: 'Advent',
+                      color: widget.colorPalette.activeElementText,
+                      fontSize: 40,
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: -1.2,
+                    )
+                ),
+                Text(
+                    "Level ${widget.levelIndex + 1}",
+                    style: TextStyle(
+                      fontFamily: 'Advent',
+                      color: widget.colorPalette.activeElementText,
+                      fontSize: 20,
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: -0.6,
+                    )
+                )
+              ]
+          ),
+          leadingWidth: 75,
+          leading: Padding(
+            padding: const EdgeInsets.only(left: 20.0, top: 33.0, bottom: 33.0),
+            child: IconButton(
+              alignment: Alignment.centerLeft,
+              icon: ImageIcon(
+                AssetImage("assets/images/ui_elements/back_icon.png"),
+                size: 45,
+                color: widget.colorPalette.activeElementBorder,
+              ), onPressed:_exitLevelPage,
+            ),
+          ),
+
+          actions: [
+            Padding(
+              padding: const EdgeInsets.only(right: 20.0),
+              child: IconButton(
+                alignment: Alignment.topRight,
+                icon: ImageIcon(
+                  AssetImage("assets/images/ui_elements/gear_icon.png"),
+                  size: 45,
+                  color: widget.colorPalette.activeElementBorder,
+                  semanticLabel: "Settings",
+                ), onPressed: () {  },
+
+              ),
+            )
+          ],
+          // foregroundColor: Colors.transparent,
+        ),
+
+        body: Stack(
+          children: [
+            AnimatedBuilder(
+              animation: _controller,
+              builder: (context, child) {
+                return Align(
+                  alignment: _alignmentAnimation.value,
+                  child: Opacity(
+                    opacity: _opacityAnimation.value,
+                    child: LevelCompletionCard(
+                      colorPalette: widget.colorPalette,
+                      completionTime: _levelCompletionTime,
+                      rating: _levelRating,
+                      replayLevelCallback: _replayLevel,
+                      exitLevelCallback: _exitLevelPage,
+                      nextLevelCallback: _nextLevelCallback,
+                    ),
+                  )
+                );
+              },
+              // child:
+
+            ),
+           if (_levelComplete == false)
+           GameWidget(
+            game: MyGame(
+                mazeLogic: widget.mazeLogic,
+                colorPalette: widget.colorPalette,
+                hapticEngine: widget.hapticEngine,
+                audioPlayer: widget.audioPlayer,
+                exitGameCallback: _triggerExit,
+              ),
+           ),
+
+          ],
+        )
+      
+      ),
+    );
+  }
+}
