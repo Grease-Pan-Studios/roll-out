@@ -1,7 +1,6 @@
 
 import 'package:amaze_game/states/settings_state.dart';
 
-import 'package:haptic_feedback/haptic_feedback.dart';
 import 'package:vibration/vibration.dart';
 
 class HapticEngineService{

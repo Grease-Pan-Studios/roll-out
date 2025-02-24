@@ -2,12 +2,11 @@
 import 'package:amaze_game/services/audio_player_service.dart';
 import 'package:amaze_game/services/haptic_engine_service.dart';
 import 'package:flutter/material.dart';
-import 'package:flame_audio/flame_audio.dart';
 import 'package:flame_forge2d/flame_forge2d.dart';
 
 import 'package:amaze_game/logical/color_palette_logic.dart';
 import 'package:amaze_game/controls/controller.dart';
-import 'package:haptic_feedback/haptic_feedback.dart';
+
 
 class BallComponent extends BodyComponent with ContactCallbacks {
 
