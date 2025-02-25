@@ -1,16 +1,19 @@
 
 import 'dart:math';
 
+import 'package:amaze_game/game_components/cell_component.dart';
 import 'package:amaze_game/game_components/wall_component.dart';
+
 import 'package:amaze_game/logical/color_palette_logic.dart';
 import 'package:amaze_game/logical/maze_logic.dart';
+import 'package:amaze_game/logical/cell_logic.dart';
+
 import 'package:amaze_game/game_components/ball_component.dart';
 import 'package:amaze_game/controls/controller.dart';
 import 'package:amaze_game/services/audio_player_service.dart';
 import 'package:amaze_game/services/haptic_engine_service.dart';
 
 import 'package:flame/components.dart';
-import 'package:flame/effects.dart';
 
 import 'package:flame_forge2d/flame_forge2d.dart';
 import 'package:flutter/material.dart';
@@ -33,6 +36,8 @@ class MazeComponent extends PositionComponent{
   double goalThreshold = 0.1;
   bool mazeComplete = false;
 
+
+
   MazeComponent({
     required this.mazeLogic,
     required this.audioPlayer,
@@ -50,11 +55,9 @@ class MazeComponent extends PositionComponent{
 
     position = Vector2.zero();
 
-    // // priority = 6;
-    // await initializeAudioPlayer();
-
     buildBorders();
 
+    // buildCells();
     buildWallsHorizontal();
 
     buildWallsVertical();
@@ -77,15 +80,6 @@ class MazeComponent extends PositionComponent{
     }
   }
 
-
-  // Future<void> initializeAudioPlayer() async {
-  //
-  //   audioPlayer = AudioPlayerService(sfxAssets: [
-  //     "assets/audio/sfx/tap-dull-1.wav",
-  //   ]);
-  //   await audioPlayer.initialize();
-  //
-  // }
 
   void addBall(){
     ballComponent = BallComponent(
@@ -118,6 +112,33 @@ class MazeComponent extends PositionComponent{
     );
     add(irisOutComponent);
   }
+
+  void buildCells(){
+
+    for (int x = 0; x < mazeLogic.width; x++){
+      for (int y = 0; y < mazeLogic.height; y++){
+
+        CellLogic cell = mazeLogic.getCellAt(x, y);
+        Vector2 position = mazeLogic.renderPositionOfCell(x, y);
+
+        CellComponent cellComponent = CellComponent(
+          location: position,
+          cellSize: 0.1,
+          passageRatio: 0.5,
+          wallRatio: 0.1,
+          colorPalette: colorPalette,
+        );
+
+        add(cellComponent);
+
+      }
+    }
+
+
+
+
+  }
+
 
   void buildWallsHorizontal(){
     List<List<Vector2>> horizontalWalls = mazeLogic.getHorizontalWalls();

@@ -45,7 +45,7 @@ class BallComponent extends BodyComponent with ContactCallbacks {
       ..userData = this
       ..allowSleep = false
       ..position = initialPosition
-      ..type = BodyType.dynamic //BodyType.static//
+      ..type = BodyType.static//BodyType.dynamic //
       ..gravityScale = Vector2.all(6);
       // ..gravityOverride = Vector2(1, 0);
 

@@ -1,4 +1,5 @@
 
+import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
 import 'package:flame_forge2d/flame_forge2d.dart';
 
@@ -14,11 +15,11 @@ class WallComponent extends BodyComponent with ContactCallbacks{
   WallComponent({
     required this.position, required this.size,
     this.color = Colors.white,
-    this.isStatic = true});
+    this.isStatic = true
+  });
 
   @override
   Body createBody() {
-
     final shape = PolygonShape()..setAsBox(size.x / 2, size.y / 2, Vector2(0, 0), 0);
     final bodyDef = BodyDef(
       userData: this,
@@ -40,14 +41,17 @@ class WallComponent extends BodyComponent with ContactCallbacks{
 
   @override
   void render(Canvas canvas) {
-    super.render(canvas);
+    // super.render(canvas);
     canvas.drawRect(
       Rect.fromCenter(
         center: Offset.zero,
         width: size.x,
         height: size.y,
       ),
-      Paint()..color = color,
+      Paint()
+        ..style = PaintingStyle.fill
+        ..blendMode = BlendMode.src
+        ..color = color,
     );
   }
 }

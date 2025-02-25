@@ -73,6 +73,9 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return SlidingUpPanel(
+
+      defaultPanelState: PanelState.OPEN,
+
       color: widget.colorPalette.secondary,
       parallaxOffset: 0,
       panel: PathPickerPage(

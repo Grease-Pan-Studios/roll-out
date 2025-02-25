@@ -30,6 +30,10 @@ class MazeLogic {
   double wallWidth;
   double borderWidth;
 
+
+  /* New Shit */
+  // double defaultCellSize = 0.5;
+
   static const double defaultPassageWidth = 0.3;
   static const double defaultWallWidth = 0.1;
   static const double defaultBorderWidth = 0.15;
