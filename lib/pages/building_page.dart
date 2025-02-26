@@ -5,7 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:flame/game.dart';
 
-import 'package:amaze_game/my_game.dart';
+import 'package:amaze_game/games/standard_game.dart';
 import 'package:amaze_game/logical/maze_logic.dart';
 import 'package:amaze_game/generation/maze_generator.dart';
 
@@ -132,7 +132,7 @@ class _BuildingPageState extends State<BuildingPage> {
             children: [
 
               GameWidget(
-                  game: MyGame(
+                  game: StandardGame(
                       mazeLogic: mazeLogic,
                       colorPalette: widget.colorPalette,
                       hapticEngine: widget.hapticEngine,

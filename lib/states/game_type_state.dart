@@ -1,0 +1,6 @@
+
+
+enum GameType{
+  standard,
+  blackbox,
+}

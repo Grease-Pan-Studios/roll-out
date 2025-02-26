@@ -12,7 +12,7 @@ import 'package:flame/components.dart';
 import 'package:amaze_game/game_components/maze_component.dart';
 
 
-class MyGame extends Forge2DGame{
+class StandardGame extends Forge2DGame{
 
   final MazeLogic mazeLogic;
   final ColorPaletteLogic colorPalette;
@@ -29,15 +29,13 @@ class MyGame extends Forge2DGame{
   late TextComponent timeText;
   late Stopwatch stopwatch;
 
-  MyGame(
-    {
-      required this.mazeLogic,
-      required this.colorPalette,
-      required this.exitGameCallback,
-      required this.hapticEngine,
-      required this.audioPlayer,
-    }
-  ) : super(
+  StandardGame({
+    required this.mazeLogic,
+    required this.colorPalette,
+    required this.exitGameCallback,
+    required this.hapticEngine,
+    required this.audioPlayer,
+  }) : super(
       world: Forge2DWorld(gravity: Vector2(0, 10)),
       zoom: 100
   );
@@ -131,14 +129,6 @@ class MyGame extends Forge2DGame{
     final scaleY = cameraSize.y / (mazeSize.y + 2* padding + (timeText.height / camera.viewfinder.zoom));
     camera.viewfinder.zoom = scaleX > scaleY ? scaleY : scaleX;
 
-    /*print("Camera Size: $cameraSize");
-    print("Maze Size: $mazeSize");
-
-    print("Camera Zoom: ${camera.viewfinder.zoom}");
-
-    print("Camera Position: ${camera.viewfinder.position}");
-    print("Maze Position: ${reference.position}");
-*/
     camera.moveTo(reference.position + Vector2(mazeSize.x/2, mazeSize.y/2));
 
   }
@@ -161,27 +151,8 @@ class MyGame extends Forge2DGame{
     // timeText.position = Vector2(size.x/2, 0);
   }
 
-  @override
-  void render(Canvas canvas) {
-    super.render(canvas);
-    // final fillPaint = Paint()
-    //   ..color = Colors.red//colorPalette.secondary
-    //   ..style = PaintingStyle.fill;
-
-    // Vector2 goalPosition = mazeLogic.renderPositionOfCell(
-    //     mazeLogic.goalPositionX,
-    //     mazeLogic.goalPositionY
-    // );
-    //
-    // Offset goalOffset = Offset(
-    //     goalPosition.x,
-    //     goalPosition.y
-    // );
-    // canvas.drawCircle(goalOffset, 100, fillPaint);
-  }
-
 
   @override
-  Color backgroundColor() => colorPalette.secondary;
+  Color backgroundColor() => colorPalette.getDarkPrimary();
 
 }

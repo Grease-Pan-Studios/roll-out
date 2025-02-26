@@ -6,6 +6,7 @@ class ColorPaletteLogic{
 
   double hue;
   bool isColored;
+  bool isDarkMode;
 
   Color primary;
   Color secondary;
@@ -23,6 +24,7 @@ class ColorPaletteLogic{
   ColorPaletteLogic({
     required this.hue,
     required this.isColored,
+    required this.isDarkMode,
     required this.primary,
     required this.secondary,
     required this.activeElementBackground,
@@ -40,14 +42,15 @@ class ColorPaletteLogic{
       return ColorPaletteLogic(
         hue: hue,
         isColored: true,
+        isDarkMode: true,
         primary: HSLColor.fromAHSL(1, hue, 0.52, 0.12).toColor(),
         secondary: HSLColor.fromAHSL(1, hue, 0.30, 0.28).toColor(),
-        activeElementBackground: HSLColor.fromAHSL(1, hue, 0.23, 0.24).toColor(),
-        activeElementText: HSLColor.fromAHSL(1, hue, 0.16, 0.85).toColor(),
-        activeElementBorder: HSLColor.fromAHSL(0.85, hue, 0.16, 0.85).toColor(),
-        inactiveElementBackground: HSLColor.fromAHSL(1, hue, 0.31, 0.33).toColor(),
-        inactiveElementText: HSLColor.fromAHSL(1, hue, 0.14, 0.50).toColor(),
-        inactiveElementBorder: HSLColor.fromAHSL(0.85, hue, 0.14, 0.50).toColor(),
+        activeElementBackground: HSLColor.fromAHSL(1, hue, 0.30, 0.13).toColor(),
+        activeElementText: HSLColor.fromAHSL(1, hue, 0.13, 0.78).toColor(),
+        activeElementBorder: HSLColor.fromAHSL(0.85, hue, 0.13, 0.78).toColor(),
+        inactiveElementBackground: HSLColor.fromAHSL(1, hue, 0.35, 0.18).toColor(),
+        inactiveElementText: HSLColor.fromAHSL(1, hue, 0.18, 0.42).toColor(),
+        inactiveElementBorder: HSLColor.fromAHSL(0.85, hue, 0.18, 0.42).toColor(),
       );
     }
 
@@ -55,6 +58,7 @@ class ColorPaletteLogic{
     return ColorPaletteLogic(
       hue: hue,
       isColored: true,
+      isDarkMode: false,
       primary: HSLColor.fromAHSL(1, hue, 0.97, 0.87).toColor(),
       secondary: HSLColor.fromAHSL(1, hue, 1, 0.82).toColor(),
       activeElementBackground: HSLColor.fromAHSL(1, hue, 0.94, 0.93).toColor(),
@@ -78,6 +82,7 @@ class ColorPaletteLogic{
     return ColorPaletteLogic(
       hue: 0,
       isColored: false,
+      isDarkMode: false,
       primary: HSLColor.fromAHSL(1, 0, 0, 0.87).toColor(),
       secondary: HSLColor.fromAHSL(1, 0, 0, 0.82).toColor(),
       activeElementBackground: HSLColor.fromAHSL(1, 0, 0, 0.93).toColor(),
@@ -94,6 +99,7 @@ class ColorPaletteLogic{
     return ColorPaletteLogic(
       hue: 0,
       isColored: false,
+      isDarkMode: true,
       primary: HSLColor.fromAHSL(1, 0, 0, 0.13).toColor(),
       secondary: HSLColor.fromAHSL(1, 0, 0, 0.18).toColor(),
       activeElementBackground: HSLColor.fromAHSL(1, 0, 0, 0.07).toColor(),
@@ -105,6 +111,23 @@ class ColorPaletteLogic{
     );
   }
 
+  Color getLightPrimary(){
+    if (isDarkMode){
+      print("We are Dark");
+      return secondary;
+    }
+    print("We are Light");
+    return primary;
+  }
+
+  Color getDarkPrimary(){
+    if (isDarkMode){
+      print("We are Dark");
+      return primary;
+    }
+    print("We are Light");
+    return secondary;
+  }
 
   void switchColorMode({required bool isDarkMode}){
     if (isDarkMode){

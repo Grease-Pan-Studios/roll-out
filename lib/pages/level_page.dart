@@ -16,7 +16,7 @@ import 'package:amaze_game/ui_components/settings_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flame/game.dart';
 
-import 'package:amaze_game/my_game.dart';
+import 'package:amaze_game/games/standard_game.dart';
 
 class LevelPage extends StatefulWidget {
 
@@ -62,7 +62,7 @@ class _LevelPageState extends State<LevelPage> with SingleTickerProviderStateMix
   late LevelCompletionCard levelCompletionCard;
   late VoidCallback? _nextLevelCallback;
 
-  late MyGame _game;
+  late StandardGame _game;
 
   @override
   void initState(){
@@ -115,7 +115,7 @@ class _LevelPageState extends State<LevelPage> with SingleTickerProviderStateMix
       _nextLevelCallback = null;
     }
 
-    _game = MyGame(
+    _game = StandardGame(
       mazeLogic: widget.mazeLogic,
       colorPalette: widget.colorPalette,
       hapticEngine: widget.hapticEngine,
@@ -216,10 +216,10 @@ class _LevelPageState extends State<LevelPage> with SingleTickerProviderStateMix
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        backgroundColor: widget.colorPalette.secondary,
+        backgroundColor: widget.colorPalette.getDarkPrimary(),
         appBar: AppBar(
           toolbarHeight: 120,
-          backgroundColor: widget.colorPalette.secondary,
+          backgroundColor: widget.colorPalette.getDarkPrimary(),
           automaticallyImplyLeading: false,
           centerTitle: true,
           title: Column(

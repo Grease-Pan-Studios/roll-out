@@ -181,7 +181,7 @@ class MazeComponent extends PositionComponent with HasGameRef{
             size.y + 2 * padding),
         Radius.circular(padding),
       ),
-      Paint()..color = colorPalette.primary,
+      Paint()..color = colorPalette.getLightPrimary(),
     );
 
     final strokePaint = Paint()

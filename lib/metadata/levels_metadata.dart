@@ -52,5 +52,37 @@ Map levelsMetaData = {
       }
     }
 
+  },
+  2 : {
+    "page_folder_name": "path_2",
+    "hue": 280,
+    "sections" : {
+      0 : {
+        "section_folder_name" : "section_1",
+        "section_name": "Darkness may hide",
+        "unlocked": [0],
+        "levels": ["1.json", "1.json"]
+      },
+      1 : {
+        "section_folder_name": "section_2",
+        "section_name": "the trees and the flowers,",
+        "unlocked": [],
+        "levels": ["1.json"]
+      },
+      2 : {
+        "section_folder_name": "section_2",
+        "section_name": "but it cannot hide...",
+        "unlocked": [],
+        "levels": ["1.json"]
+      },
+      3 : {
+        "section_folder_name": "section_2",
+        "section_name": "love from the soul.",
+        "unlocked": [],
+        "levels": ["1.json"]
+      }
+    }
+
   }
+
 };
