@@ -11,7 +11,7 @@ class HapticEngineService{
   late bool canVibrate;
 
   bool _isVibrating = false;
-  int bufferTime = 150; // in milliseconds
+  int bufferTime = 250; // in milliseconds
 
   HapticEngineService({
     required this.settingsState

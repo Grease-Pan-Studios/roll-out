@@ -6,14 +6,13 @@ import 'package:flame_forge2d/flame_forge2d.dart';
 
 class WallComponent extends BodyComponent with ContactCallbacks{
 
-  @override
-  final Vector2 position;
+  final Vector2 location;
   final Vector2 size;
   final bool isStatic;
   final Color color;
 
   WallComponent({
-    required this.position, required this.size,
+    required this.location, required this.size,
     this.color = Colors.white,
     this.isStatic = true
   });
@@ -23,7 +22,7 @@ class WallComponent extends BodyComponent with ContactCallbacks{
     final shape = PolygonShape()..setAsBox(size.x / 2, size.y / 2, Vector2(0, 0), 0);
     final bodyDef = BodyDef(
       userData: this,
-      position: position,
+      position: location,
       allowSleep: false,
       type: isStatic ? BodyType.kinematic : BodyType.dynamic,
 
@@ -34,6 +33,9 @@ class WallComponent extends BodyComponent with ContactCallbacks{
       density: 1,
       friction: 0.5,
       userData: this,
+      // filter: Filter()
+      //   ..categoryBits = 1 << 1
+      //   ..maskBits =  1<<2
     );
     // priority = 1;
     return world.createBody(bodyDef)..createFixture(fixtureDef);
@@ -50,7 +52,7 @@ class WallComponent extends BodyComponent with ContactCallbacks{
       ),
       Paint()
         ..style = PaintingStyle.fill
-        ..blendMode = BlendMode.src
+        // ..blendMode = BlendMode.src
         ..color = color,
     );
   }

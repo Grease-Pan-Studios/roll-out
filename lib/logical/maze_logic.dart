@@ -26,17 +26,22 @@ class MazeLogic {
   int seedUsed;
 
   /* Render Parameters */
-  double passageWidth;
-  double wallWidth;
-  double borderWidth;
+  double cellSize;
+  double passageRatio;
+  double wallRatio;
 
 
   /* New Shit */
-  // double defaultCellSize = 0.5;
+  static const double defaultCellSize = 0.5;
 
-  static const double defaultPassageWidth = 0.3;
-  static const double defaultWallWidth = 0.1;
-  static const double defaultBorderWidth = 0.15;
+  static const double defaultPassageRatio = 0.6;
+  static const double defaultWallRatio = 0.15;
+
+  // static const double defaultPassageWidth = 0.3;
+  // static const double defaultWallWidth = 0.1;
+  // static const double defaultBorderWidth = 0.15;
+
+
   static const double defaultBallRestitution = 0.5;
 
   List<CellLogic> cells;
@@ -53,9 +58,9 @@ class MazeLogic {
     required this.twoStarThreshold,
     required this.oneStarThreshold,
     this.cells = const [],
-    this.passageWidth = defaultPassageWidth,
-    this.wallWidth = defaultWallWidth,
-    this.borderWidth = defaultBorderWidth,
+    this.cellSize = defaultCellSize,
+    this.passageRatio = defaultPassageRatio,
+    this.wallRatio = defaultWallRatio,
     this.ballRestitution = defaultBallRestitution,
   }){
 
@@ -64,10 +69,11 @@ class MazeLogic {
       "Maze dimensions must be positive"
     );
 
-    assert(
-      passageWidth > 0 && wallWidth > 0 && borderWidth > 0,
-      "Render parameters must be positive"
-    );
+    assert( passageRatio <= 1 && passageRatio >= 0, 'Padding must be between 0 and 1');
+    assert( wallRatio <= 1 && wallRatio >= 0, 'Wall width must be between 0 and 1');
+    // assert( )
+    assert(passageRatio + wallRatio * 2 <= 1, 'Cant Have Negative Padding Dummy');
+
 
     if (cells.isEmpty){
       int size = width * height;
@@ -213,23 +219,24 @@ class MazeLogic {
   }
 
 
-  double get internalRenderWidth => width * passageWidth + (width - 1) * wallWidth;
-  double get internalRenderHeight => height * passageWidth + (height - 1) * wallWidth;
+  double get internalRenderWidth => width * cellSize;
+  double get internalRenderHeight => height * cellSize;
+
+  double get ballRadius => cellSize * passageRatio * 0.25 ;
 
   Vector2 renderPositionOfCell(int x, int y){
     x = x;
     y = y;
-    double positionX = borderWidth + x * (passageWidth + wallWidth) - (internalRenderWidth / 2);
-    double positionY = borderWidth + y * (passageWidth + wallWidth) - (internalRenderHeight / 2);
+    double positionX = cellSize / 2 + cellSize * x;
+    double positionY = cellSize / 2 + cellSize * y;
+    // double positionX = borderWidth + x * (passageWidth + wallWidth) - (internalRenderWidth / 2);
+    // double positionY = borderWidth + y * (passageWidth + wallWidth) - (internalRenderHeight / 2);
     // double positionY =  internalRenderHeight * ( y / height - 0.5) + borderWidth;
     return Vector2(positionX, positionY);
   }
 
   Vector2 renderSizeOfMaze(){
-    return Vector2(
-        internalRenderWidth + 2 * borderWidth,
-        internalRenderHeight + 2 * borderWidth
-    );
+    return Vector2(internalRenderWidth,internalRenderHeight);
   }
 
   Map<String, dynamic> toJson() {
@@ -241,9 +248,9 @@ class MazeLogic {
       'goalPositionX': goalPositionX,
       'goalPositionY': goalPositionY,
       'seedUsed': seedUsed,
-      'passageWidth': passageWidth,
-      'wallWidth': wallWidth,
-      'borderWidth': borderWidth,
+      'cellSize': cellSize,
+      'passageRatio': passageRatio,
+      'wallRatio': wallRatio,
       'cells': cells.map((cell) => cell.toJson()).toList()
     };
   }
@@ -264,9 +271,9 @@ class MazeLogic {
         twoStarThreshold: Duration(seconds: json['twoStarThreshold']),
         oneStarThreshold: Duration(seconds: json['oneStarThreshold']),
         cells: (json['cells'] as List).map((cell) => CellLogic.fromJson(cell)).toList(),
-        passageWidth: json['passageWidth'] ?? defaultPassageWidth,
-        wallWidth: json['wallWidth'] ?? defaultWallWidth,
-        borderWidth: json['borderWidth'] ?? defaultBorderWidth,
+        cellSize: json['cellSize'] ?? defaultCellSize,
+        passageRatio: json['passageRatio'] ?? defaultPassageRatio,
+        wallRatio: json['wallRatio'] ?? defaultWallRatio,
         ballRestitution: json['ballRestitution'] ?? defaultBallRestitution,
 
     );

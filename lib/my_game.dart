@@ -10,7 +10,6 @@ import 'package:flame_forge2d/flame_forge2d.dart';
 import 'package:flame/components.dart';
 
 import 'package:amaze_game/game_components/maze_component.dart';
-import 'package:amaze_game/generation/maze_generator.dart';
 
 
 class MyGame extends Forge2DGame{
@@ -123,16 +122,25 @@ class MyGame extends Forge2DGame{
   }
 
   void adjustCamera({required MazeComponent reference}){
-    double padding = 0.2;
-    print("Height of text: ${timeText.height}");
+    double padding = reference.mazeLogic.cellSize / 2;
+    // print("Height of text: ${timeText.height}");
     final mazeSize = reference.size;
     final cameraSize = size;
 
     final scaleX = cameraSize.x / (mazeSize.x + 2 * padding);
-    final scaleY = cameraSize.y / (mazeSize.y + padding + (timeText.height / camera.viewfinder.zoom));
+    final scaleY = cameraSize.y / (mazeSize.y + 2* padding + (timeText.height / camera.viewfinder.zoom));
     camera.viewfinder.zoom = scaleX > scaleY ? scaleY : scaleX;
-    print("Zoom: ${camera.viewfinder.zoom}");
-    camera.viewfinder.position = (reference.position) + Vector2(0, 0.1);
+
+    /*print("Camera Size: $cameraSize");
+    print("Maze Size: $mazeSize");
+
+    print("Camera Zoom: ${camera.viewfinder.zoom}");
+
+    print("Camera Position: ${camera.viewfinder.position}");
+    print("Maze Position: ${reference.position}");
+*/
+    camera.moveTo(reference.position + Vector2(mazeSize.x/2, mazeSize.y/2));
+
   }
 
   String getTime(){

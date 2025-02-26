@@ -40,8 +40,8 @@ class ColorPaletteLogic{
       return ColorPaletteLogic(
         hue: hue,
         isColored: true,
-        primary: HSLColor.fromAHSL(1, hue, 0.30, 0.28).toColor(),
-        secondary: HSLColor.fromAHSL(1, hue, 0.52, 0.12).toColor(),
+        primary: HSLColor.fromAHSL(1, hue, 0.52, 0.12).toColor(),
+        secondary: HSLColor.fromAHSL(1, hue, 0.30, 0.28).toColor(),
         activeElementBackground: HSLColor.fromAHSL(1, hue, 0.23, 0.24).toColor(),
         activeElementText: HSLColor.fromAHSL(1, hue, 0.16, 0.85).toColor(),
         activeElementBorder: HSLColor.fromAHSL(0.85, hue, 0.16, 0.85).toColor(),

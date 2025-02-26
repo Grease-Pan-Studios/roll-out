@@ -35,17 +35,25 @@ class BallComponent extends BodyComponent with ContactCallbacks {
   @override
   Body createBody() {
     final shape = CircleShape()..radius = radius;
-    final fixtureDef = FixtureDef(shape)
+    final fixtureDef = FixtureDef(
+      shape,
+      // filter: Filter()
+      //   ..categoryBits = 1<<2
+      //   ..maskBits = 1<<1
+
+    )
       ..userData = this
       ..restitution = restitution
       ..density = 1
-      ..friction = 0.5;
+      ..friction = 0.5
+
+    ;
     final bodyDef = BodyDef()
       ..bullet = true
       ..userData = this
       ..allowSleep = false
       ..position = initialPosition
-      ..type = BodyType.static//BodyType.dynamic //
+      ..type = BodyType.dynamic //  BodyType.static//
       ..gravityScale = Vector2.all(6);
       // ..gravityOverride = Vector2(1, 0);
 
@@ -73,7 +81,12 @@ class BallComponent extends BodyComponent with ContactCallbacks {
     }
 
     if (deltaVelocity > 0.1){
-      hapticEngine.vibrate(amplitude: (deltaVelocity * 100).toInt());
+      int amplitude = (deltaVelocity * 10).toInt();
+      // print("Amplitude: $amplitude");
+      if (amplitude > 2){
+        print("Amplitude: $amplitude");
+        hapticEngine.vibrate(amplitude: amplitude);
+      }
     }
 
   }

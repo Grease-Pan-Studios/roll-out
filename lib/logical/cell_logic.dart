@@ -1,6 +1,4 @@
 
-
-
 class CellLogic {
 
   late List<bool> neighbourConnections;
@@ -55,5 +53,6 @@ class CellLogic {
       leftConnection: json['leftConnection']
     );
   }
+
 
 }

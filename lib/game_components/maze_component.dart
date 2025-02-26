@@ -18,7 +18,7 @@ import 'package:flame/components.dart';
 import 'package:flame_forge2d/flame_forge2d.dart';
 import 'package:flutter/material.dart';
 
-class MazeComponent extends PositionComponent{
+class MazeComponent extends PositionComponent with HasGameRef{
 
   MazeLogic mazeLogic;
   Controller controller;
@@ -33,9 +33,8 @@ class MazeComponent extends PositionComponent{
   late CircleComponent irisOutComponent;
 
   // lat
-  double goalThreshold = 0.1;
+  // double goalThreshold = 0.1;
   bool mazeComplete = false;
-
 
 
   MazeComponent({
@@ -53,14 +52,14 @@ class MazeComponent extends PositionComponent{
 
     size = mazeLogic.renderSizeOfMaze();
 
-    position = Vector2.zero();
+    position = Vector2(0, 0);
 
-    buildBorders();
+    // buildBorders();
 
-    // buildCells();
-    buildWallsHorizontal();
+    buildCells();
+    // buildWallsHorizontal();
 
-    buildWallsVertical();
+    // buildWallsVertical();
 
     addBall();
 
@@ -75,7 +74,7 @@ class MazeComponent extends PositionComponent{
     super.update(dt);
 
     double dist = goalPosition.distanceTo(ballComponent.position);
-    if (!mazeComplete && dist < goalThreshold){
+    if (!mazeComplete && dist < mazeLogic.cellSize * 0.8){
       gameCompleteTrigger();
     }
   }
@@ -90,9 +89,10 @@ class MazeComponent extends PositionComponent{
       audioPlayer: audioPlayer,
       colorPalette: colorPalette,
       restitution: mazeLogic.ballRestitution,
-      radius: 0.07,
+      radius: mazeLogic.ballRadius,
       // color: Colors.green
     );
+    // ballComponent.body.setTransform(ballComponent.position , 0);
     add(ballComponent);
   }
 
@@ -122,135 +122,35 @@ class MazeComponent extends PositionComponent{
         Vector2 position = mazeLogic.renderPositionOfCell(x, y);
 
         CellComponent cellComponent = CellComponent(
+          cellLogic: cell,
           location: position,
-          cellSize: 0.1,
-          passageRatio: 0.5,
-          wallRatio: 0.1,
+          cellSize: mazeLogic.cellSize,
+          passageRatio: mazeLogic.passageRatio,
+          wallRatio: mazeLogic.wallRatio,
           colorPalette: colorPalette,
+          addComponent: addComponent,
         );
 
-        add(cellComponent);
+        for (BodyComponent wall in cellComponent.getWalls()){
+          // Vector2 offset = wall.position;
 
-      }
-    }
-
-
-
-
-  }
-
-
-  void buildWallsHorizontal(){
-    List<List<Vector2>> horizontalWalls = mazeLogic.getHorizontalWalls();
-
-    double passageWidth = mazeLogic.passageWidth;
-    double wallWidth = mazeLogic.wallWidth;
-    double internalWidth = mazeLogic.internalRenderWidth;
-    double internalHeight = mazeLogic.internalRenderHeight;
-
-    for (int rowIndex = 0; rowIndex < horizontalWalls.length; rowIndex++){
-      // print(horizontalWalls[rowIndex]);
-      for (var wall in horizontalWalls[rowIndex]) {
-
-        double sectionWidth = (wall.y - wall.x) * (passageWidth + wallWidth);
-
-        double positionX = (passageWidth * wall.x) + (wallWidth * ((wall.x == 0) ? 0 : wall.x - 1)) - (internalWidth / 2) + sectionWidth / 2; //wall.x * passageWidth
-        double positionY = (rowIndex + 1 ) * passageWidth + (rowIndex) * wallWidth  - (internalHeight / 2) + (wallWidth / 2);
-
-
-        add(WallComponent(
-            position: Vector2(positionX, positionY),
-            size: Vector2(sectionWidth, wallWidth),
-            color: colorPalette.activeElementBorder// Colors.white//
-            // color: Colors.red.withOpacity(0.6)
-        ));
-      }
-
-    }
-  }
-
-  void buildWallsVertical(){
-    List<List<Vector2>> verticalWalls = mazeLogic.getVerticalWalls();
-    List<Set<int>> rowEnds = [];
-
-    for (List<Vector2> column in mazeLogic.getHorizontalWalls()){
-      Set<int> ends = {};
-      for (Vector2 wall in column){
-        ends.add(wall.y.toInt());
-      }
-      rowEnds.add(ends);
-    }
-
-    double passageWidth = mazeLogic.passageWidth;
-    double wallWidth = mazeLogic.wallWidth;
-    double internalWidth = mazeLogic.internalRenderWidth;
-    double internalHeight = mazeLogic.internalRenderHeight;
-
-    for (int rowIndex = 0; rowIndex < verticalWalls.length; rowIndex++) {
-      // print("Row Idx ${rowIndex} : ${verticalWalls[rowIndex]}");
-      for (var wall in verticalWalls[rowIndex]) {
-
-        double extension = 0;
-        // print("Indexing: ${wall.y.toInt()}");
-        if (wall.y != mazeLogic.height){
-          // print("Set: ${rowEnds[wall.y.toInt() - 1]}");
-         if(rowEnds[wall.y.toInt() - 1].contains(rowIndex + 1)){
-          extension = wallWidth;
-        }
+          // wall.body.setTransform(wall + position, 0);
+          add(wall);
+          // wall.body.worldPoint(mazeLogic.renderPositionOfCell(x, y));
+          // print(wall.body.position);
         }
 
-        double sectionHeight = (wall.y - wall.x) * (passageWidth + wallWidth) + extension ;
+        // add(cellComponent);
 
-        double positionY = (passageWidth * wall.x) +
-            (wallWidth * ((wall.x == 0) ? 0 : wall.x - 1)) -
-            (internalHeight / 2) + sectionHeight / 2; //wall.x * passageWidth
-        double positionX = (rowIndex + 1) * passageWidth +
-            (rowIndex) * wallWidth - (internalWidth / 2) + (wallWidth / 2);
-
-        add(WallComponent(
-            position: Vector2(positionX, positionY),
-            size: Vector2(wallWidth, sectionHeight),
-            color: colorPalette.activeElementBorder
-            // color: Colors.blue.withOpacity(0.6)
-        ));
       }
     }
+
   }
 
-  void buildBorders(){
-
-    double borderWidth = mazeLogic.borderWidth;
-    double internalWidth = mazeLogic.internalRenderWidth;
-    double internalHeight = mazeLogic.internalRenderHeight;
-
-    Color borderColor = colorPalette.activeElementBorder;
-
-    final topBorder = WallComponent(
-        position: Vector2(0,  - (internalHeight + borderWidth) / 2),
-        size: Vector2(internalWidth + 2 * borderWidth, borderWidth),
-        color: borderColor
-
-    );
-
-    final bottomBorder = WallComponent(
-        position: Vector2(0, (internalHeight + borderWidth) / 2),
-        size: Vector2(internalWidth + 2 * borderWidth, borderWidth),
-        color: borderColor
-    );
-
-    final leftBorder = WallComponent(
-        position: Vector2(- (internalWidth + borderWidth) / 2, 0),
-        size: Vector2(borderWidth, internalHeight),
-        color: borderColor
-    );
-
-    final rightBorder = WallComponent(
-        position: Vector2((internalWidth + borderWidth) / 2, 0),
-        size: Vector2(borderWidth, internalHeight),
-        color: borderColor
-    );
-
-    addAll([topBorder, bottomBorder, leftBorder, rightBorder]);
+  void addComponent(BodyComponent component, Vector2 offset){
+    // component
+    component.body.setTransform(component.position + offset, 0);
+    add(component);
   }
 
   void gameCompleteTrigger(){
@@ -272,13 +172,23 @@ class MazeComponent extends PositionComponent{
   void render(Canvas canvas) {
     super.render(canvas);
 
-    /* Draw a dot of 0.1 radius */
-    // Vector2 testPosition = positionOfCell(3, 0);
-    // canvas.drawCircle(Offset(testPosition.x, testPosition.y), 0.1, Paint()..color = Colors.red);
+    double padding = mazeLogic.cellSize / 4;
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(
+        Rect.fromLTWH(
+            -padding, -padding,
+            size.x + 2 * padding,
+            size.y + 2 * padding),
+        Radius.circular(padding),
+      ),
+      Paint()..color = colorPalette.primary,
+    );
+
     final strokePaint = Paint()
       ..color = colorPalette.activeElementBorder
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 0.03;
+      ..strokeMiterLimit = 1
+      ..strokeWidth = mazeLogic.ballRadius * 0.3;
 
     final fillPaint = Paint()
       ..color = colorPalette.primary
@@ -286,8 +196,8 @@ class MazeComponent extends PositionComponent{
       // ..strokeWidth = 0.02;
 
     Offset goalOffset = Offset(goalPosition.x, goalPosition.y);
-    canvas.drawCircle(goalOffset, 0.1, fillPaint);
-    canvas.drawCircle(goalOffset, 0.1, strokePaint);
+    canvas.drawCircle(goalOffset, mazeLogic.ballRadius, fillPaint);
+    canvas.drawCircle(goalOffset, mazeLogic.ballRadius, strokePaint);
 
 
     if (mazeComplete){
