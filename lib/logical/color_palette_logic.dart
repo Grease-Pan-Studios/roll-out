@@ -113,19 +113,15 @@ class ColorPaletteLogic{
 
   Color getLightPrimary(){
     if (isDarkMode){
-      print("We are Dark");
       return secondary;
     }
-    print("We are Light");
     return primary;
   }
 
   Color getDarkPrimary(){
     if (isDarkMode){
-      print("We are Dark");
       return primary;
     }
-    print("We are Light");
     return secondary;
   }
 

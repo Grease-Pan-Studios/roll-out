@@ -16,7 +16,7 @@ class CellComponent {
   final Vector2 location;
   final ColorPaletteLogic colorPalette;
   final CellLogic cellLogic;
-  final Function(BodyComponent, Vector2) addComponent;
+  // final Function(BodyComponent, Vector2) addComponent;
 
   late double wallWidth;
   late double passageWidth;
@@ -30,7 +30,7 @@ class CellComponent {
     required this.passageRatio,
     required this.wallRatio,
     required this.colorPalette,
-    required this.addComponent,
+    // required this.addComponent,
   }){
     assert( cellSize > 0, 'Cell size must be greater than 0');
     assert( passageRatio <= 1 && passageRatio >= 0, 'Padding must be between 0 and 1');

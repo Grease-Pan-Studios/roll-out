@@ -1,5 +1,6 @@
 
 import 'dart:convert';
+import 'package:amaze_game/states/game_type_state.dart';
 import 'package:flutter/services.dart';
 
 import 'package:amaze_game/logical/maze_logic.dart';
@@ -12,12 +13,14 @@ class SectionLogic{
   String pageFolderName;
   String sectionFolderName;
   String sectionName;
+  GameType gameType;
   List<String> levelFileNames;
   List<int> defaultUnlockedLevelIndices;
   late List<MazeLogic> levels;
 
   SectionLogic({
     required this.hue,
+    required this.gameType,
     required this.pageIndex,
     required this.sectionIndex,
     required this.pageFolderName,
@@ -25,9 +28,7 @@ class SectionLogic{
     required this.sectionName,
     required this.defaultUnlockedLevelIndices,
     required this.levelFileNames,
-  }){
-    // print("SectionName: $sectionName, $defaultUnlockedLevelIndices");
-  }
+  });
 
   void fetchLevelData() async{
     levels = [];

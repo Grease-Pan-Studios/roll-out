@@ -10,6 +10,7 @@ import 'package:amaze_game/services/storage_service.dart';
 import 'package:amaze_game/states/game_state.dart';
 import 'package:amaze_game/states/level_state.dart';
 import 'package:amaze_game/states/settings_state.dart';
+import 'package:amaze_game/states/game_type_state.dart';
 
 import 'package:amaze_game/ui_components/level_completion_card.dart';
 import 'package:amaze_game/ui_components/settings_card.dart';
@@ -17,6 +18,7 @@ import 'package:flutter/material.dart';
 import 'package:flame/game.dart';
 
 import 'package:amaze_game/games/standard_game.dart';
+import 'package:amaze_game/games/black_box_game.dart';
 
 class LevelPage extends StatefulWidget {
 
@@ -115,15 +117,33 @@ class _LevelPageState extends State<LevelPage> with SingleTickerProviderStateMix
       _nextLevelCallback = null;
     }
 
-    _game = StandardGame(
-      mazeLogic: widget.mazeLogic,
-      colorPalette: widget.colorPalette,
-      hapticEngine: widget.hapticEngine,
-      audioPlayer: widget.audioPlayer,
-      exitGameCallback: _triggerExit,
-    );
+    initializeGameObject();
+
 
   }
+
+  void initializeGameObject(){
+    // print("Game Type: ${widget.sectionLogic.gameType}");
+    if (widget.sectionLogic.gameType == GameType.blackbox){
+      _game = BlackBoxGame(
+        mazeLogic: widget.mazeLogic,
+        colorPalette: widget.colorPalette,
+        hapticEngine: widget.hapticEngine,
+        audioPlayer: widget.audioPlayer,
+        exitGameCallback: _triggerExit,
+      );
+    }else{
+      _game = StandardGame(
+        mazeLogic: widget.mazeLogic,
+        colorPalette: widget.colorPalette,
+        hapticEngine: widget.hapticEngine,
+        audioPlayer: widget.audioPlayer,
+        exitGameCallback: _triggerExit,
+      );
+    }
+  }
+
+
 
   @override
   void dispose(){
@@ -227,15 +247,17 @@ class _LevelPageState extends State<LevelPage> with SingleTickerProviderStateMix
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 SizedBox(height: 20),
-                Text(
-                    widget.sectionLogic.sectionName,
-                    style: TextStyle(
-                      fontFamily: 'Advent',
-                      color: widget.colorPalette.activeElementText,
-                      fontSize: 40,
-                      fontWeight: FontWeight.w600,
-                      letterSpacing: -1.2,
-                    )
+                FittedBox(
+                  child: Text(
+                      widget.sectionLogic.sectionName,
+                      style: TextStyle(
+                        fontFamily: 'Advent',
+                        color: widget.colorPalette.activeElementText,
+                        fontSize: 40,
+                        fontWeight: FontWeight.w600,
+                        letterSpacing: -1.2,
+                      )
+                  ),
                 ),
                 Text(
                     "Level ${widget.levelIndex + 1}",

@@ -2,6 +2,8 @@
 
 
 
+import 'package:amaze_game/states/game_type_state.dart';
+
 Map levelsMetaData = {
 
   0 : {
@@ -54,8 +56,9 @@ Map levelsMetaData = {
 
   },
   2 : {
-    "page_folder_name": "path_2",
+    "page_folder_name": "path_1",
     "hue": 280,
+    "game_type" : GameType.blackbox,
     "sections" : {
       0 : {
         "section_folder_name" : "section_1",

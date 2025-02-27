@@ -1,11 +1,13 @@
 
 import 'package:amaze_game/logical/section_logic.dart';
+import 'package:amaze_game/states/game_type_state.dart';
 
 class PageLogic {
 
   double hue;
   int pageIndex;
   String pageFolderName;
+  GameType gameType;
 
   late List<SectionLogic> sections;
 
@@ -13,6 +15,7 @@ class PageLogic {
     required this.pageIndex,
     required this.pageFolderName,
     required this.hue,
+    required this.gameType,
     required Map sectionMaps,
   }){
 
@@ -27,6 +30,7 @@ class PageLogic {
             hue: hue,
             pageIndex: pageIndex,
             pageFolderName: pageFolderName,
+            gameType: gameType,
             sectionFolderName: sectionMap["section_folder_name"],
             sectionIndex: sectionIndex,
             sectionName: sectionMap["section_name"],

@@ -18,7 +18,7 @@ import 'package:flame/components.dart';
 import 'package:flame_forge2d/flame_forge2d.dart';
 import 'package:flutter/material.dart';
 
-class MazeComponent extends PositionComponent with HasGameRef{
+class StandardMaze extends PositionComponent with HasGameRef{
 
   MazeLogic mazeLogic;
   Controller controller;
@@ -32,12 +32,11 @@ class MazeComponent extends PositionComponent with HasGameRef{
   late Vector2 goalPosition;
   late CircleComponent irisOutComponent;
 
-  // lat
-  // double goalThreshold = 0.1;
+
   bool mazeComplete = false;
 
 
-  MazeComponent({
+  StandardMaze({
     required this.mazeLogic,
     required this.audioPlayer,
     required this.hapticEngine,
@@ -54,12 +53,7 @@ class MazeComponent extends PositionComponent with HasGameRef{
 
     position = Vector2(0, 0);
 
-    // buildBorders();
-
     buildCells();
-    // buildWallsHorizontal();
-
-    // buildWallsVertical();
 
     addBall();
 
@@ -128,7 +122,6 @@ class MazeComponent extends PositionComponent with HasGameRef{
           passageRatio: mazeLogic.passageRatio,
           wallRatio: mazeLogic.wallRatio,
           colorPalette: colorPalette,
-          addComponent: addComponent,
         );
 
         for (BodyComponent wall in cellComponent.getWalls()){
@@ -147,11 +140,6 @@ class MazeComponent extends PositionComponent with HasGameRef{
 
   }
 
-  void addComponent(BodyComponent component, Vector2 offset){
-    // component
-    component.body.setTransform(component.position + offset, 0);
-    add(component);
-  }
 
   void gameCompleteTrigger(){
     // print("Goal Reached");
@@ -168,10 +156,7 @@ class MazeComponent extends PositionComponent with HasGameRef{
 
   }
 
-  @override
-  void render(Canvas canvas) {
-    super.render(canvas);
-
+  void drawBackground(Canvas canvas){
     double padding = mazeLogic.cellSize / 4;
     canvas.drawRRect(
       RRect.fromRectAndRadius(
@@ -183,26 +168,39 @@ class MazeComponent extends PositionComponent with HasGameRef{
       ),
       Paint()..color = colorPalette.getLightPrimary(),
     );
+  }
 
-    final strokePaint = Paint()
+  void drawGoal(Canvas canvas){
+    final goalStrokePaint = Paint()
       ..color = colorPalette.activeElementBorder
       ..style = PaintingStyle.stroke
       ..strokeMiterLimit = 1
       ..strokeWidth = mazeLogic.ballRadius * 0.3;
 
-    final fillPaint = Paint()
+    final goalFillPaint = Paint()
       ..color = colorPalette.primary
       ..style = PaintingStyle.fill;
-      // ..strokeWidth = 0.02;
 
     Offset goalOffset = Offset(goalPosition.x, goalPosition.y);
-    canvas.drawCircle(goalOffset, mazeLogic.ballRadius, fillPaint);
-    canvas.drawCircle(goalOffset, mazeLogic.ballRadius, strokePaint);
+    canvas.drawCircle(goalOffset, mazeLogic.ballRadius, goalFillPaint);
+    canvas.drawCircle(goalOffset, mazeLogic.ballRadius, goalStrokePaint);
+  }
 
-
+  void whileComplete(){
     if (mazeComplete){
-      irisOutComponent.radius = irisOutComponent.radius + 0.12;
+      irisOutComponent.radius += 0.12;
     }
+  }
+
+  @override
+  void render(Canvas canvas) {
+
+    super.render(canvas);
+    drawBackground(canvas);
+
+    drawGoal(canvas);
+
+    whileComplete();
 
   }
 

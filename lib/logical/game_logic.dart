@@ -2,6 +2,7 @@
 import 'package:amaze_game/logical/page_logic.dart';
 
 import 'package:amaze_game/metadata/levels_metadata.dart';
+import 'package:amaze_game/states/game_type_state.dart';
 
 class GameLogic{
 
@@ -21,6 +22,7 @@ class GameLogic{
           pageIndex: pageIndex,
           pageFolderName: pageMap["page_folder_name"],
           hue: pageMap["hue"].toDouble(),
+          gameType: pageMap["game_type"] ?? GameType.standard,
           sectionMaps: pageMap["sections"]
         )
       );

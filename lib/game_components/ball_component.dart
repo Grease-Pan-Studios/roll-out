@@ -35,19 +35,12 @@ class BallComponent extends BodyComponent with ContactCallbacks {
   @override
   Body createBody() {
     final shape = CircleShape()..radius = radius;
-    final fixtureDef = FixtureDef(
-      shape,
-      // filter: Filter()
-      //   ..categoryBits = 1<<2
-      //   ..maskBits = 1<<1
-
-    )
+    final fixtureDef = FixtureDef(shape)
       ..userData = this
       ..restitution = restitution
       ..density = 1
-      ..friction = 0.5
+      ..friction = 0.5;
 
-    ;
     final bodyDef = BodyDef()
       ..bullet = true
       ..userData = this
@@ -119,7 +112,7 @@ class BallComponent extends BodyComponent with ContactCallbacks {
 
   @override
   void render(Canvas canvas) {
-    // TODO: implement render
+
     super.render(canvas);
 
     canvas.drawCircle(

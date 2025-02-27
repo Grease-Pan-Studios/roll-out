@@ -70,7 +70,7 @@ class _PathPickerPageState extends State<PathPickerPage> {
   Widget build(BuildContext context) {
     return PageView(
       controller: PageController(
-        initialPage: 0,
+        initialPage: 2,
       ),
       onPageChanged: _onPageChanged,
       children: List<Widget>.generate(

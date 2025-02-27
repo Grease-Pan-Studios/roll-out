@@ -9,7 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flame_forge2d/flame_forge2d.dart';
 import 'package:flame/components.dart';
 
-import 'package:amaze_game/game_components/maze_component.dart';
+import 'package:amaze_game/mazes/standard_maze.dart';
 
 
 class StandardGame extends Forge2DGame{
@@ -18,7 +18,6 @@ class StandardGame extends Forge2DGame{
   final ColorPaletteLogic colorPalette;
   final HapticEngineService hapticEngine;
   final AudioPlayerService audioPlayer;
-
   final void Function({
     required bool isComplete,
     required int rating,
@@ -26,6 +25,8 @@ class StandardGame extends Forge2DGame{
   }) exitGameCallback;
 
 
+  late StandardMaze maze;
+  late Controller controller;
   late TextComponent timeText;
   late Stopwatch stopwatch;
 
@@ -36,11 +37,11 @@ class StandardGame extends Forge2DGame{
     required this.hapticEngine,
     required this.audioPlayer,
   }) : super(
-      world: Forge2DWorld(gravity: Vector2(0, 10)),
-      zoom: 100
+    world: Forge2DWorld(gravity: Vector2(0, 10)),
+    zoom: 100
   );
 
-  void _triggerGameCompletion(){
+  void triggerGameCompletion(){
 
     stopwatch.stop();
     Duration completionTime = Duration(
@@ -81,16 +82,10 @@ class StandardGame extends Forge2DGame{
   @override
   Future<void> onLoad() async {
 
-    final controller = Controller();
+    initializeController();
 
-    final maze = MazeComponent(
-        mazeLogic: mazeLogic,
-        colorPalette: colorPalette,
-        audioPlayer: audioPlayer,
-        hapticEngine: hapticEngine,
-        controller: controller,
-        levelCompletionCallback: _triggerGameCompletion,
-    );
+    initializeMaze();
+    world.add(maze);
 
     timeText = TextComponent(
       text: "00:00:00",
@@ -107,9 +102,6 @@ class StandardGame extends Forge2DGame{
         ),
       )
     );
-
-    world.addAll([maze]);
-
     add(timeText);
 
     adjustCamera(reference: maze);
@@ -119,7 +111,24 @@ class StandardGame extends Forge2DGame{
 
   }
 
-  void adjustCamera({required MazeComponent reference}){
+  void initializeController(){
+    controller = Controller();
+  }
+
+  void initializeMaze(){
+    maze = StandardMaze(
+      mazeLogic: mazeLogic,
+      colorPalette: colorPalette,
+      audioPlayer: audioPlayer,
+      hapticEngine: hapticEngine,
+      controller: controller,
+      levelCompletionCallback: triggerGameCompletion,
+    );
+
+  }
+
+
+  void adjustCamera({required StandardMaze reference}){
     double padding = reference.mazeLogic.cellSize / 2;
     // print("Height of text: ${timeText.height}");
     final mazeSize = reference.size;
