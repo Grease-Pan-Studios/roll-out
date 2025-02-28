@@ -118,7 +118,7 @@ class BallComponent extends BodyComponent with ContactCallbacks {
     canvas.drawCircle(
       Offset.zero,
       radius,
-      Paint()..color = colorPalette.inactiveElementBackground,
+      Paint()..color = colorPalette.getDarkPrimary(),
     );
 
 

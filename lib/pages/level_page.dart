@@ -19,6 +19,7 @@ import 'package:flame/game.dart';
 
 import 'package:amaze_game/games/standard_game.dart';
 import 'package:amaze_game/games/black_box_game.dart';
+import 'package:amaze_game/games/looking_glass_game.dart';
 
 class LevelPage extends StatefulWidget {
 
@@ -124,7 +125,7 @@ class _LevelPageState extends State<LevelPage> with SingleTickerProviderStateMix
 
   void initializeGameObject(){
     // print("Game Type: ${widget.sectionLogic.gameType}");
-    if (widget.sectionLogic.gameType == GameType.blackbox){
+    if (widget.sectionLogic.gameType == GameType.blackBox){
       _game = BlackBoxGame(
         mazeLogic: widget.mazeLogic,
         colorPalette: widget.colorPalette,
@@ -132,6 +133,16 @@ class _LevelPageState extends State<LevelPage> with SingleTickerProviderStateMix
         audioPlayer: widget.audioPlayer,
         exitGameCallback: _triggerExit,
       );
+    }else if(widget.sectionLogic.gameType == GameType.lookingGlass){
+
+      _game = LookingGlassGame(
+        mazeLogic: widget.mazeLogic,
+        colorPalette: widget.colorPalette,
+        hapticEngine: widget.hapticEngine,
+        audioPlayer: widget.audioPlayer,
+        exitGameCallback: _triggerExit,
+      );
+
     }else{
       _game = StandardGame(
         mazeLogic: widget.mazeLogic,
@@ -142,8 +153,6 @@ class _LevelPageState extends State<LevelPage> with SingleTickerProviderStateMix
       );
     }
   }
-
-
 
   @override
   void dispose(){

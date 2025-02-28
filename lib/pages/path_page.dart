@@ -33,6 +33,44 @@ class PathPage extends StatelessWidget {
     required this.colorPalette,
   });
 
+  final bool _showAllSection = true;
+
+  List<PageSection> _unlockedSections() {
+
+    List<PageSection> unlockedSections = [];
+
+    if (pathwayLogic.sections.isEmpty){
+      return unlockedSections;
+    }
+
+    for (int i = 0; i < pathwayLogic.sections.length; i++){
+
+      unlockedSections.add(
+        PageSection(
+          sectionLogic: pathwayLogic.sections[i],
+          audioPlayer: audioPlayer,
+          gameState: gameState,
+          settingsState: settingsState,
+          hapticEngine: hapticEngine,
+          hue: pathwayLogic.hue,
+          storageService: storageService,
+          colorPalette: colorPalette,
+        )
+      );
+
+      if (!_showAllSection && !gameState.isSectionCompleted(
+          sectionLogic: pathwayLogic.sections[i])){
+        break;
+      }
+
+    }
+
+    return unlockedSections;
+
+  }
+
+
+
   @override
   Widget build(BuildContext context) {
     return Material(
@@ -45,20 +83,7 @@ class PathPage extends StatelessWidget {
         child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: pathwayLogic.sections.map(
-                    (sectionLogic) {
-                  return PageSection(
-                    sectionLogic: sectionLogic,
-                    audioPlayer: audioPlayer,
-                    gameState: gameState,
-                    settingsState: settingsState,
-                    hapticEngine: hapticEngine,
-                    hue: pathwayLogic.hue,
-                    storageService: storageService,
-                    colorPalette: colorPalette,
-                  );
-                }
-            ).toList()
+            children: _unlockedSections(),
           // [PathSection(),],
         ),
       ),

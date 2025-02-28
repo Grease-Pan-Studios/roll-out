@@ -114,15 +114,19 @@ class ColorPaletteLogic{
   Color getLightPrimary(){
     if (isDarkMode){
       return secondary;
+
     }
     return primary;
+
   }
 
   Color getDarkPrimary(){
     if (isDarkMode){
       return primary;
+
     }
     return secondary;
+
   }
 
   void switchColorMode({required bool isDarkMode}){

@@ -58,6 +58,21 @@ class GameState{
     }
   }
 
+  bool isSectionCompleted({required SectionLogic sectionLogic}){
+    for (int i = 0; i < sectionLogic.levelFileNames.length; i++){
+      LevelState levelState = getLevelState(
+          sectionLogic: sectionLogic,
+          levelIndex: i
+      );
+
+      if (levelState.state != LevelStateEnum.completed){
+        return false;
+      }
+    }
+    return true;
+  }
+
+
   void _setCachedLevelState({
       required SectionLogic sectionLogic,
       required int levelIndex,

@@ -57,8 +57,34 @@ Map levelsMetaData = {
   },
   2 : {
     "page_folder_name": "path_1",
+    "hue": 315,
+    "game_type" : GameType.lookingGlass,
+    "sections" : {
+      0 : {
+        "section_folder_name" : "section_1",
+        "section_name": "Those who don't",
+        "unlocked": [0],
+        "levels": ["1.json", "1.json"]
+      },
+      1 : {
+        "section_folder_name": "section_2",
+        "section_name": "believe in magic,",
+        "unlocked": [],
+        "levels": ["1.json"]
+      },
+      2 : {
+        "section_folder_name": "section_2",
+        "section_name": "will never find it",
+        "unlocked": [],
+        "levels": ["1.json"]
+      },
+    }
+
+  },
+  3 : {
+    "page_folder_name": "path_1",
     "hue": 280,
-    "game_type" : GameType.blackbox,
+    "game_type" : GameType.blackBox,
     "sections" : {
       0 : {
         "section_folder_name" : "section_1",

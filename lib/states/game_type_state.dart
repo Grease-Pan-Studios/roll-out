@@ -2,5 +2,6 @@
 
 enum GameType{
   standard,
-  blackbox,
+  lookingGlass,
+  blackBox,
 }
