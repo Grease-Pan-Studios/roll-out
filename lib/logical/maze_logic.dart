@@ -1,4 +1,6 @@
 
+import 'dart:math';
+import 'dart:io';
 import 'package:flame_forge2d/flame_forge2d.dart';
 
 import 'package:amaze_game/logical/cell_logic.dart';
@@ -17,12 +19,13 @@ class MazeLogic {
   int goalPositionY;
 
   double ballRestitution;
+  static const double defaultBallRestitution = 0.5;
 
   Duration threeStarThreshold;
   Duration twoStarThreshold;
   Duration oneStarThreshold;
 
-  /* */
+
   int seedUsed;
 
   /* Render Parameters */
@@ -31,18 +34,9 @@ class MazeLogic {
   double wallRatio;
 
 
-  /* New Shit */
   static const double defaultCellSize = 0.5;
-
   static const double defaultPassageRatio = 0.6;
   static const double defaultWallRatio = 0.15;
-
-  // static const double defaultPassageWidth = 0.3;
-  // static const double defaultWallWidth = 0.1;
-  // static const double defaultBorderWidth = 0.15;
-
-
-  static const double defaultBallRestitution = 0.5;
 
   List<CellLogic> cells;
 
@@ -225,13 +219,8 @@ class MazeLogic {
   double get ballRadius => cellSize * passageRatio * 0.25 ;
 
   Vector2 renderPositionOfCell(int x, int y){
-    x = x;
-    y = y;
     double positionX = cellSize / 2 + cellSize * x;
     double positionY = cellSize / 2 + cellSize * y;
-    // double positionX = borderWidth + x * (passageWidth + wallWidth) - (internalRenderWidth / 2);
-    // double positionY = borderWidth + y * (passageWidth + wallWidth) - (internalRenderHeight / 2);
-    // double positionY =  internalRenderHeight * ( y / height - 0.5) + borderWidth;
     return Vector2(positionX, positionY);
   }
 
@@ -243,15 +232,19 @@ class MazeLogic {
     return {
       'width': width,
       'height': height,
+      'seedUsed': seedUsed,
       'startPositionX': startPositionX,
       'startPositionY': startPositionY,
       'goalPositionX': goalPositionX,
       'goalPositionY': goalPositionY,
-      'seedUsed': seedUsed,
+      'threeStarThreshold': threeStarThreshold.inSeconds,
+      'twoStarThreshold': twoStarThreshold.inSeconds,
+      'oneStarThreshold': oneStarThreshold.inSeconds,
       'cellSize': cellSize,
-      'passageRatio': passageRatio,
       'wallRatio': wallRatio,
-      'cells': cells.map((cell) => cell.toJson()).toList()
+      'passageRatio': passageRatio,
+      'ballRestitution': ballRestitution,
+      'cells': cells.map((cell) => cell.toJson()).toList(),
     };
   }
 
@@ -270,14 +263,337 @@ class MazeLogic {
         threeStarThreshold: Duration(seconds: json['threeStarThreshold']),
         twoStarThreshold: Duration(seconds: json['twoStarThreshold']),
         oneStarThreshold: Duration(seconds: json['oneStarThreshold']),
-        cells: (json['cells'] as List).map((cell) => CellLogic.fromJson(cell)).toList(),
         cellSize: json['cellSize'] ?? defaultCellSize,
-        passageRatio: json['passageRatio'] ?? defaultPassageRatio,
         wallRatio: json['wallRatio'] ?? defaultWallRatio,
+        passageRatio: json['passageRatio'] ?? defaultPassageRatio,
         ballRestitution: json['ballRestitution'] ?? defaultBallRestitution,
+        cells: (json['cells'] as List).map((cell) => CellLogic.fromJson(cell)).toList(),
 
     );
   }
+
+
+
+  // Add this helper method to return only connected neighbours.
+  List<int> getConnectedNeighbours(int index) {
+    List<int> coords = indexToCoordinates(index);
+    int x = coords[0];
+    int y = coords[1];
+    List<int> neighbours = [];
+
+    // Left neighbour
+    if (x > 0) {
+      CellLogic current = getCellAt(x, y);
+      CellLogic leftCell = getCellAt(x - 1, y);
+      if (current.leftConnection && leftCell.rightConnection) {
+        neighbours.add(index - 1);
+      }
+    }
+    // Right neighbour
+    if (x < width - 1) {
+      CellLogic current = getCellAt(x, y);
+      CellLogic rightCell = getCellAt(x + 1, y);
+      if (current.rightConnection && rightCell.leftConnection) {
+        neighbours.add(index + 1);
+      }
+    }
+    // Top neighbour
+    if (y > 0) {
+      CellLogic current = getCellAt(x, y);
+      CellLogic topCell = getCellAt(x, y - 1);
+      if (current.topConnection && topCell.bottomConnection) {
+        neighbours.add(index - width);
+      }
+    }
+    // Bottom neighbour
+    if (y < height - 1) {
+      CellLogic current = getCellAt(x, y);
+      CellLogic bottomCell = getCellAt(x, y + 1);
+      if (current.bottomConnection && bottomCell.topConnection) {
+        neighbours.add(index + width);
+      }
+    }
+    return neighbours;
+  }
+
+  // Method to calculate path metrics: distance and number of turns.
+  void estimateTimeThreshold() {
+    // Convert start and goal positions to indices.
+    int startIndex = startPositionX + startPositionY * width;
+    int goalIndex = goalPositionX + goalPositionY * width;
+
+    // Map to keep track of each cell's predecessor.
+    List<int?> parent = List.filled(width * height, null);
+    // Distance array to store the number of steps from the start.
+    List<int> distance = List.filled(width * height, -1);
+    // Queue for BFS.
+    List<int> queue = [];
+
+    // Initialize BFS with the start cell.
+    distance[startIndex] = 0;
+    queue.add(startIndex);
+
+    // BFS loop.
+    while (queue.isNotEmpty) {
+      int current = queue.removeAt(0);
+      if (current == goalIndex) {
+        break; // Found the goal.
+      }
+      for (int neighbour in getConnectedNeighbours(current)) {
+        if (distance[neighbour] == -1) {
+          distance[neighbour] = distance[current] + 1;
+          parent[neighbour] = current;
+          queue.add(neighbour);
+        }
+      }
+    }
+
+    // If goal is unreachable, return metrics as -1.
+    if (distance[goalIndex] == -1) {
+      print("FAKE NEWS");
+      return;
+    }
+
+    // Reconstruct the shortest path from goal to start.
+    List<int> pathIndices = [];
+    int current = goalIndex;
+    while (current != startIndex) {
+      pathIndices.add(current);
+      current = parent[current]!;
+    }
+    pathIndices.add(startIndex);
+    // Reverse to get path from start to goal.
+    pathIndices = pathIndices.reversed.toList();
+
+    // Calculate the number of turns.
+    int turns = 0;
+    // A helper function to compute the direction vector between two cells.
+    Vector2 getDirection(int fromIndex, int toIndex) {
+      List<int> fromCoords = indexToCoordinates(fromIndex);
+      List<int> toCoords = indexToCoordinates(toIndex);
+      return Vector2(
+          (toCoords[0] - fromCoords[0]).toDouble(),
+          (toCoords[1] - fromCoords[1]).toDouble()
+      );
+    }
+
+    // Calculate turns: for each segment of three cells, check if direction changes.
+    if (pathIndices.length >= 3) {
+      Vector2 prevDir = getDirection(pathIndices[0], pathIndices[1]);
+      for (int i = 1; i < pathIndices.length - 1; i++) {
+        Vector2 currentDir = getDirection(pathIndices[i], pathIndices[i + 1]);
+        // A turn is detected when the current direction differs from the previous one.
+        if (currentDir != prevDir) {
+          turns++;
+        }
+        prevDir = currentDir;
+      }
+    }
+
+    // Distance in cells is the number of steps between start and goal.
+    int steps = pathIndices.length - 1;
+
+    double stepBuffer = 0.1; // For easy
+    int fullBuffer = 1; // For easy
+
+    double timePerStep1 = 0.48 + stepBuffer;
+    double timePerTurn1 = 0.78 + stepBuffer;
+
+    double timePerStep2 = 0.38 + stepBuffer;
+    double timePerTurn2 = 0.68 + stepBuffer;
+
+    double timePerStep3 = 0.28 + stepBuffer;
+    double timePerTurn3 = 0.53 + stepBuffer;
+
+    int threeStarThreshold = (timePerStep3 * steps + timePerTurn3 * turns).toInt() + fullBuffer;
+    int twoStarThreshold = (timePerStep2 * steps + timePerTurn2 * turns).toInt() + fullBuffer;
+    int oneStarThreshold = (timePerStep1 * steps + timePerTurn1 * turns).toInt() + fullBuffer;
+
+    print("threeStarThreshold: $threeStarThreshold");
+    print("twoStarThreshold: $twoStarThreshold");
+    print("oneStarThreshold: $oneStarThreshold");
+
+    this.oneStarThreshold = Duration(seconds: oneStarThreshold);
+    this.twoStarThreshold = Duration(seconds: twoStarThreshold);
+    this.threeStarThreshold = Duration(seconds: threeStarThreshold);
+    /*return(
+        "\"threeStarThreshold\": $threeStarThreshold,\n"
+        "\"twoStarThreshold\": $twoStarThreshold, \n"
+        "\"oneStarThreshold\": $oneStarThreshold\n"
+    );*/
+
+    // print("oneStarThreshold: ${(timePerStep1 * steps + timePerTurn1 * turns).toInt()}");
+
+    // Map<String, dynamic> thresholds = {
+    //   'threeStarThreshold': (timePerStep3 * steps + timePerTurn3 * turns).toInt(),
+    //   'twoStarThreshold': (timePerStep2 * steps + timePerTurn2 * turns).toInt(),
+    //   'oneStarThreshold': (timePerStep1 * steps + timePerTurn1 * turns).toInt(),
+    // };
+
+
+
+
+  }
+
+
+  void adjustStartAndGoal(){
+    List<Vector2> diameter = findMazeDiameter();
+    Vector2 start = diameter[0];
+    Vector2 goal = diameter[1];
+    startPositionX = start.x.toInt();
+    startPositionY = start.y.toInt();
+    goalPositionX = goal.x.toInt();
+    goalPositionY = goal.y.toInt();
+  }
+
+
+  /// Returns a list of 2 points
+  /// points are coordinates of the two farthest apart cells
+  List<Vector2> findMazeDiameter() {
+    final random = Random();
+
+    // Helper function: convert index to (x, y) coordinates.
+    List<int> indexToCoords(int index) => indexToCoordinates(index);
+
+    // Helper function: get connected neighbours of a cell based on connection flags,
+    // sampling the directions in random order.
+    List<int> getConnectedNeighbours(int index) {
+      List<int> neighbours = [];
+      List<int> coords = indexToCoords(index);
+      int x = coords[0];
+      int y = coords[1];
+
+      // Define directions with deltas and associated connection flags.
+      List<Map<String, dynamic>> directions = [
+        {
+          'dx': -1,
+          'dy': 0,
+          'currentFlag': 'leftConnection',
+          'neighborFlag': 'rightConnection'
+        },
+        {
+          'dx': 1,
+          'dy': 0,
+          'currentFlag': 'rightConnection',
+          'neighborFlag': 'leftConnection'
+        },
+        {
+          'dx': 0,
+          'dy': -1,
+          'currentFlag': 'topConnection',
+          'neighborFlag': 'bottomConnection'
+        },
+        {
+          'dx': 0,
+          'dy': 1,
+          'currentFlag': 'bottomConnection',
+          'neighborFlag': 'topConnection'
+        },
+      ];
+
+      // Shuffle the directions randomly.
+      directions.shuffle(random);
+
+      // Process each direction.
+      for (var dir in directions) {
+        int newX = x + (dir['dx'] as int);
+        int newY = y + (dir['dy'] as int);
+
+        // Check maze bounds.
+        if (newX < 0 || newX >= width || newY < 0 || newY >= height) continue;
+
+        int neighborIndex = newX + newY * width;
+        CellLogic current = getCellAt(x, y);
+        CellLogic neighborCell = getCellAt(newX, newY);
+
+        // Determine connection status based on direction.
+        bool currentConnected;
+        bool neighborConnected;
+        switch (dir['currentFlag']) {
+          case 'leftConnection':
+            currentConnected = current.leftConnection;
+            neighborConnected = neighborCell.rightConnection;
+            break;
+          case 'rightConnection':
+            currentConnected = current.rightConnection;
+            neighborConnected = neighborCell.leftConnection;
+            break;
+          case 'topConnection':
+            currentConnected = current.topConnection;
+            neighborConnected = neighborCell.bottomConnection;
+            break;
+          case 'bottomConnection':
+            currentConnected = current.bottomConnection;
+            neighborConnected = neighborCell.topConnection;
+            break;
+          default:
+            currentConnected = false;
+            neighborConnected = false;
+        }
+
+        if (currentConnected && neighborConnected) {
+          neighbours.add(neighborIndex);
+        }
+      }
+      return neighbours;
+    }
+
+    // Helper function: perform BFS from a given start index.
+    // Returns a list of distances from start (with -1 for unreachable cells).
+    List<int> bfs(int start) {
+      List<int> distances = List.filled(width * height, -1);
+      List<int> queue = [];
+      distances[start] = 0;
+      queue.add(start);
+
+      while (queue.isNotEmpty) {
+        int current = queue.removeAt(0);
+        int currentDist = distances[current];
+        for (int neighbor in getConnectedNeighbours(current)) {
+          if (distances[neighbor] == -1) {
+            distances[neighbor] = currentDist + 1;
+            queue.add(neighbor);
+          }
+        }
+      }
+      return distances;
+    }
+
+    // Helper function: find the index of the farthest cell given a distances list.
+    Map<String, int> findFarthest(List<int> distances) {
+      int maxDist = -1;
+      int farthestIndex = 0;
+      for (int i = 0; i < distances.length; i++) {
+        if (distances[i] > maxDist) {
+          maxDist = distances[i];
+          farthestIndex = i;
+        }
+      }
+      return {"index": farthestIndex, "distance": maxDist};
+    }
+
+    // Choose an arbitrary starting cell (e.g., cell at index 0).
+    int arbitraryStart = 0;
+    // First BFS to find one endpoint.
+    List<int> distancesFromStart = bfs(arbitraryStart);
+    Map<String, int> firstFarthest = findFarthest(distancesFromStart);
+    int pointA = firstFarthest["index"]!;
+
+    // Second BFS from pointA to find the other endpoint.
+    List<int> distancesFromA = bfs(pointA);
+    Map<String, int> secondFarthest = findFarthest(distancesFromA);
+    int pointB = secondFarthest["index"]!;
+
+    // Convert indices to coordinates.
+    List<int> coordinatesA = indexToCoords(pointA);
+    List<int> coordinatesB = indexToCoords(pointB);
+
+    return [
+      Vector2(coordinatesA[0].toDouble(), coordinatesA[1].toDouble()),
+      Vector2(coordinatesB[0].toDouble(), coordinatesB[1].toDouble())
+    ];
+  }
+
 
 
 }

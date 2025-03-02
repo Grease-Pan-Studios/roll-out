@@ -44,9 +44,10 @@ class _HomePageState extends State<HomePage> {
 
   double _panelSlide = 0.0;
 
-  void _updateColorPalette(){
+  void _updateHomePage(){
     setState(() {
-
+      widget.colorPalette.setUpdateTrigger(_updateHomePage);
+      widget.gameState.setUpdateTrigger(_updateHomePage);
     });
   }
 
@@ -66,7 +67,8 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    widget.colorPalette.setUpdateTrigger(_updateColorPalette);
+    widget.colorPalette.setUpdateTrigger(_updateHomePage);
+    widget.gameState.setUpdateTrigger(_updateHomePage);
   }
 
 
@@ -74,7 +76,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return SlidingUpPanel(
 
-      defaultPanelState: PanelState.OPEN,
+      // defaultPanelState: PanelState.OPEN,
 
       color: widget.colorPalette.secondary,
       parallaxOffset: 0,

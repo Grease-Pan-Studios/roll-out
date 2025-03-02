@@ -68,7 +68,7 @@ class StandardMaze extends PositionComponent with HasGameRef{
     super.update(dt);
 
     double dist = goalPosition.distanceTo(ballComponent.position);
-    if (!mazeComplete && dist < mazeLogic.cellSize * 0.8){
+    if (!mazeComplete && dist < mazeLogic.cellSize * 0.3){
       gameCompleteTrigger();
     }
   }
@@ -101,7 +101,7 @@ class StandardMaze extends PositionComponent with HasGameRef{
     irisOutComponent = CircleComponent(
       radius: 0,
       position: goalPosition,
-      paint: Paint()..color = colorPalette.secondary,
+      paint: Paint()..color = colorPalette.getDarkPrimary(),
       anchor: Anchor.center,
     );
     add(irisOutComponent);

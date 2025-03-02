@@ -25,7 +25,6 @@ class LevelTile extends StatelessWidget {
   AudioPlayerService audioPlayer;
 
   SectionLogic sectionLogic;
-  MazeLogic mazeLogic;
   ColorPaletteLogic colorPalette;
   StorageService storageService;
 
@@ -44,7 +43,6 @@ class LevelTile extends StatelessWidget {
     required this.hapticEngine,
     required this.audioPlayer,
     required this.sectionLogic,
-    required this.mazeLogic,
     required this.hue,
     required this.colorPalette,
     required this.levelIndex,
@@ -118,7 +116,6 @@ class LevelTile extends StatelessWidget {
               gameState: gameState,
               hapticEngine: hapticEngine,
               audioPlayer: audioPlayer,
-              mazeLogic: mazeLogic,
               colorPalette: colorPalette,
               storageService: storageService,
               settingsState: settingsState,

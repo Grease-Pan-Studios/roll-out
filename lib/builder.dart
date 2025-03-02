@@ -3,6 +3,7 @@
 import 'package:amaze_game/services/haptic_engine_service.dart';
 import 'package:amaze_game/services/audio_player_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flame/flame.dart';
 
 import 'package:amaze_game/states/settings_state.dart';
 import 'package:amaze_game/pages/building_page.dart';
@@ -12,6 +13,9 @@ import 'package:amaze_game/logical/color_palette_logic.dart';
 
 void main() async {
 
+  WidgetsFlutterBinding.ensureInitialized();
+  Flame.device.setPortraitUpOnly();
+  //
   final ColorPaletteLogic colorPalette = ColorPaletteLogic.fromHue(208);
   final SettingsState settingsState = SettingsState();
   final HapticEngineService hapticEngine = HapticEngineService(settingsState: settingsState);

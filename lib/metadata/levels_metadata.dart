@@ -1,7 +1,5 @@
 
 
-
-
 import 'package:amaze_game/states/game_type_state.dart';
 
 Map levelsMetaData = {
@@ -14,19 +12,22 @@ Map levelsMetaData = {
         "section_folder_name": "section_1",
         "section_name": "Ready?",
         "unlocked": [0],
-        "levels": ["1.json", "1.json"]
+        "levels": ["1.json", "2.json", "3.json", "4.json","5.json",
+          "6.json", "7.json", "8.json","9.json", "10.json"]
       },
       1 : {
         "section_folder_name": "section_2",
         "section_name": "Steady...",
-        "unlocked": [0],
-        "levels": ["1.json"],
+        "unlocked": [0, 1],
+        "levels": ["1.json", "2.json", "3.json", "4.json","5.json",
+          "6.json", "7.json", "8.json","9.json", "10.json",
+          "11.json", "12.json", "13.json", "14.json","15.json",],
       },
       2 : {
-        "section_folder_name": "section_2",
+        "section_folder_name": "section_3",
         "section_name": "G0!",
         "unlocked": [0],
-        "levels": ["1.json"],
+        "levels": ["1.json", "2.json", "3.json", "4.json","5.json",]
       }
     }
   },

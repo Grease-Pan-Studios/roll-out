@@ -24,7 +24,6 @@ import 'package:amaze_game/games/looking_glass_game.dart';
 class LevelPage extends StatefulWidget {
 
   final int levelIndex;
-  final MazeLogic mazeLogic;
   final SectionLogic sectionLogic;
 
   final GameState gameState;
@@ -39,7 +38,6 @@ class LevelPage extends StatefulWidget {
     super.key,
     required this.levelIndex,
     required this.sectionLogic,
-    required this.mazeLogic,
     required this.gameState,
     required this.colorPalette,
     required this.audioPlayer,
@@ -59,6 +57,7 @@ class _LevelPageState extends State<LevelPage> with SingleTickerProviderStateMix
   int _levelRating = 0;
   String _levelCompletionTime = "00:00:00";
 
+  late MazeLogic mazeLogic;
   late AnimationController _controller;
   late Animation<Alignment> _alignmentAnimation;
   late Animation<double> _opacityAnimation;
@@ -70,6 +69,10 @@ class _LevelPageState extends State<LevelPage> with SingleTickerProviderStateMix
   @override
   void initState(){
     super.initState();
+
+    initializeMazeLogic();
+
+    initializeGameObject();
 
     _controller = AnimationController(
       duration: Duration(seconds: 1),
@@ -107,7 +110,6 @@ class _LevelPageState extends State<LevelPage> with SingleTickerProviderStateMix
               settingsState: widget.settingsState,
               hapticEngine: widget.hapticEngine,
               gameState: widget.gameState,
-              mazeLogic: widget.mazeLogic,
               colorPalette: widget.colorPalette,
               storageService: widget.storageService,
             )
@@ -118,16 +120,21 @@ class _LevelPageState extends State<LevelPage> with SingleTickerProviderStateMix
       _nextLevelCallback = null;
     }
 
-    initializeGameObject();
+
 
 
   }
+
+  void initializeMazeLogic(){
+    mazeLogic = widget.sectionLogic.levels[widget.levelIndex];
+  }
+
 
   void initializeGameObject(){
     // print("Game Type: ${widget.sectionLogic.gameType}");
     if (widget.sectionLogic.gameType == GameType.blackBox){
       _game = BlackBoxGame(
-        mazeLogic: widget.mazeLogic,
+        mazeLogic: mazeLogic,
         colorPalette: widget.colorPalette,
         hapticEngine: widget.hapticEngine,
         audioPlayer: widget.audioPlayer,
@@ -136,7 +143,7 @@ class _LevelPageState extends State<LevelPage> with SingleTickerProviderStateMix
     }else if(widget.sectionLogic.gameType == GameType.lookingGlass){
 
       _game = LookingGlassGame(
-        mazeLogic: widget.mazeLogic,
+        mazeLogic: mazeLogic,
         colorPalette: widget.colorPalette,
         hapticEngine: widget.hapticEngine,
         audioPlayer: widget.audioPlayer,
@@ -145,7 +152,7 @@ class _LevelPageState extends State<LevelPage> with SingleTickerProviderStateMix
 
     }else{
       _game = StandardGame(
-        mazeLogic: widget.mazeLogic,
+        mazeLogic: mazeLogic,
         colorPalette: widget.colorPalette,
         hapticEngine: widget.hapticEngine,
         audioPlayer: widget.audioPlayer,
@@ -198,7 +205,6 @@ class _LevelPageState extends State<LevelPage> with SingleTickerProviderStateMix
       ),
     );
 
-    // levelCompletionCard.updateRating(rating);
 
   }
 
@@ -232,7 +238,6 @@ class _LevelPageState extends State<LevelPage> with SingleTickerProviderStateMix
           hapticEngine: widget.hapticEngine,
           audioPlayer: widget.audioPlayer,
           gameState: widget.gameState,
-          mazeLogic: widget.mazeLogic,
           colorPalette: widget.colorPalette,
           settingsState: widget.settingsState,
           storageService: widget.storageService,

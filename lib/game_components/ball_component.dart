@@ -75,9 +75,7 @@ class BallComponent extends BodyComponent with ContactCallbacks {
 
     if (deltaVelocity > 0.1){
       int amplitude = (deltaVelocity * 10).toInt();
-      // print("Amplitude: $amplitude");
       if (amplitude > 2){
-        print("Amplitude: $amplitude");
         hapticEngine.vibrate(amplitude: amplitude);
       }
     }
@@ -118,7 +116,7 @@ class BallComponent extends BodyComponent with ContactCallbacks {
     canvas.drawCircle(
       Offset.zero,
       radius,
-      Paint()..color = colorPalette.getDarkPrimary(),
+      Paint()..color = colorPalette.activeElementBorder,
     );
 
 

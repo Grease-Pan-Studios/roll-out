@@ -3,12 +3,12 @@ import 'package:amaze_game/services/storage_service.dart';
 import 'package:flutter/material.dart';
 
 import 'package:amaze_game/logical/game_logic.dart';
+import 'package:amaze_game/logical/path_logic.dart';
 import 'package:amaze_game/logical/section_logic.dart';
 import 'package:amaze_game/states/level_state.dart';
 
 class GameState{
 
-  // final StorageService _storageService = StorageService();
   final StorageService storageService;
   late Map<String, LevelState> _levelStates;
   VoidCallback? updateTrigger;
@@ -17,9 +17,9 @@ class GameState{
     required this.storageService
   });
 
+  final bool unlockAllLevels = true;
 
   Future<void> initialize() async{
-    // await storageService.initialize();
     _levelStates = {};
     // Get all the states present in the storage
     _levelStates = storageService.getLevelStates();
@@ -72,6 +72,15 @@ class GameState{
     return true;
   }
 
+  bool isPageCompleted({required PathLogic pageLogic}){
+    for (int i = 0; i < pageLogic.sections.length; i++){
+      SectionLogic sectionLogic = pageLogic.sections[i];
+      if (!isSectionCompleted(sectionLogic: sectionLogic)){
+        return false;
+      }
+    }
+    return true;
+  }
 
   void _setCachedLevelState({
       required SectionLogic sectionLogic,
@@ -111,6 +120,10 @@ class GameState{
     }
 
     /* If no cached state it is either locked or unlocked */
+    if (unlockAllLevels){
+      return LevelState(state: LevelStateEnum.unlocked);
+    }
+
 
     /* Is it default unlocked ? */
     if (sectionLogic.defaultUnlockedLevelIndices.contains(levelIndex)) {

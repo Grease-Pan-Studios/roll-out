@@ -62,12 +62,9 @@ class PageSection extends StatelessWidget {
               mainAxisSpacing: 15,
               crossAxisSpacing: 15,
               physics: NeverScrollableScrollPhysics(),
-              // mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              // crossAxisAlignment: CrossAxisAlignment.start,
               children: List.generate(
                 sectionLogic.levels.length,
                     (index) {
-                  final mazeLogic = sectionLogic.levels[index];
                   return LevelTile(
                     hue: hue,
                     gameState: gameState,
@@ -75,7 +72,6 @@ class PageSection extends StatelessWidget {
                     hapticEngine: hapticEngine,
                     audioPlayer: audioPlayer,
                     sectionLogic: sectionLogic,
-                    mazeLogic: mazeLogic,
                     levelIndex: index,
                     colorPalette: colorPalette,
                     storageService: storageService,

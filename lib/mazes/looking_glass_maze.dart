@@ -1,6 +1,5 @@
 
 import 'dart:math';
-import 'dart:ui' as ui;
 
 import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
@@ -15,13 +14,10 @@ class LookingGlass extends Component with HasGameRef<StandardGame> {
   final double radius;
   final ColorPaletteLogic colorPalette;
 
-
   LookingGlass({
     required this.radius,
     required this.colorPalette,
   });
-
-
 
   @override
   void render(Canvas canvas) {

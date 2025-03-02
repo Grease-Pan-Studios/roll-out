@@ -1,12 +1,12 @@
 
-import 'package:amaze_game/logical/page_logic.dart';
+import 'package:amaze_game/logical/path_logic.dart';
 
 import 'package:amaze_game/metadata/levels_metadata.dart';
 import 'package:amaze_game/states/game_type_state.dart';
 
 class GameLogic{
 
-  late List<PageLogic> pages;
+  late List<PathLogic> pages;
 
   GameLogic(){
 
@@ -18,7 +18,7 @@ class GameLogic{
     while(pageMap.isNotEmpty){
 
       pages.add(
-        PageLogic(
+        PathLogic(
           pageIndex: pageIndex,
           pageFolderName: pageMap["page_folder_name"],
           hue: pageMap["hue"].toDouble(),
@@ -35,7 +35,7 @@ class GameLogic{
   }
 
   void fetchGameLogic() async{
-    await Future.forEach(pages, (PageLogic pathway) async {
+    await Future.forEach(pages, (PathLogic pathway) async {
       for (var section in pathway.sections) {
         section.fetchLevelData();
       }

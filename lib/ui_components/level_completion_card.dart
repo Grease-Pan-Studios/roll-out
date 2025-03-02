@@ -32,6 +32,8 @@ class _LevelCompletionCardState extends State<LevelCompletionCard> with SingleTi
 
   List<bool> starState = [false, false, false];
 
+  String comment = "Great Job!";
+
   void showStars(int rating){
 
     if (rating == 0){
@@ -64,6 +66,21 @@ class _LevelCompletionCardState extends State<LevelCompletionCard> with SingleTi
     });
   }
 
+  void updateComment(){
+    if (widget.rating == 0){
+      comment = "Good Try!";
+    }
+    else if (widget.rating == 1){
+      comment = "Fair Enough!";
+    }
+    else if (widget.rating == 2){
+      comment = "Great Job!";
+    }
+    else if (widget.rating == 3){
+      comment = "Excellent!";
+    }
+  }
+
 
   @override
   void didUpdateWidget(covariant LevelCompletionCard oldWidget) {
@@ -72,6 +89,7 @@ class _LevelCompletionCardState extends State<LevelCompletionCard> with SingleTi
     if (oldWidget.rating != widget.rating){
       showStars(widget.rating);
     }
+    updateComment();
 
   }
 
@@ -175,7 +193,7 @@ class _LevelCompletionCardState extends State<LevelCompletionCard> with SingleTi
 
 
                 Text(
-                  "Great Job!",
+                  comment,
                   style: TextStyle(
                     fontFamily: 'Advent',
                     color: widget.colorPalette.activeElementText,

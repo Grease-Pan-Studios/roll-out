@@ -2,7 +2,7 @@
 import 'package:amaze_game/logical/section_logic.dart';
 import 'package:amaze_game/states/game_type_state.dart';
 
-class PageLogic {
+class PathLogic {
 
   double hue;
   int pageIndex;
@@ -11,7 +11,7 @@ class PageLogic {
 
   late List<SectionLogic> sections;
 
-  PageLogic({
+  PathLogic({
     required this.pageIndex,
     required this.pageFolderName,
     required this.hue,

@@ -22,6 +22,7 @@ class CellComponent {
   late double passageWidth;
   late double paddingRatio;
   late double paddingWidth;
+  late Color color;
 
   CellComponent({
     required this.cellLogic,
@@ -42,6 +43,7 @@ class CellComponent {
     passageWidth = cellSize * passageRatio;
     paddingRatio = 0.5 - passageRatio / 2 - wallRatio;
     paddingWidth = cellSize * paddingRatio;
+    color = colorPalette.getDarkPrimary();
   }
 
 
@@ -146,7 +148,7 @@ class CellComponent {
             -(paddingWidth + wallWidth -cellSize)/2,
             (passageWidth + wallWidth)/2) + location,
         size: Vector2(paddingWidth + wallWidth, wallWidth),
-        color: colorPalette.activeElementText
+        color: color
     );
   }
 
@@ -156,7 +158,7 @@ class CellComponent {
             -(paddingWidth + wallWidth -cellSize)/2,
             -(passageWidth + wallWidth)/2) + location,
         size: Vector2(paddingWidth + wallWidth, wallWidth),
-        color: colorPalette.activeElementText
+        color: color
     );
   }
 
@@ -167,7 +169,7 @@ class CellComponent {
             (paddingWidth + wallWidth -cellSize)/2,
             (passageWidth + wallWidth)/2) + location,
         size: Vector2(paddingWidth + wallWidth, wallWidth),
-        color: colorPalette.activeElementText
+        color: color
     );
   }
 
@@ -177,7 +179,7 @@ class CellComponent {
             (paddingWidth + wallWidth -cellSize)/2,
             -(passageWidth + wallWidth)/2) + location,
         size: Vector2(paddingWidth + wallWidth, wallWidth),
-        color: colorPalette.activeElementText
+        color: color
     );
   }
 
@@ -187,7 +189,7 @@ class CellComponent {
           -(passageWidth + wallWidth)/2,
           (paddingWidth + wallWidth -cellSize)/2) + location,
       size: Vector2(wallWidth, paddingWidth + wallWidth),
-      color: colorPalette.activeElementText
+      color: color
     );
   }
 
@@ -197,7 +199,7 @@ class CellComponent {
             (passageWidth + wallWidth)/2,
             (paddingWidth + wallWidth -cellSize)/2) + location,
         size: Vector2(wallWidth, paddingWidth + wallWidth),
-        color: colorPalette.activeElementText
+        color: color
     );
   }
 
@@ -209,7 +211,7 @@ class CellComponent {
             -(paddingWidth + wallWidth -cellSize)/2)
             + location + Vector2(0, extra),
         size: Vector2(wallWidth, paddingWidth + wallWidth + extra),
-        color: colorPalette.activeElementText
+        color: color
     );
   }
 
@@ -221,7 +223,7 @@ class CellComponent {
             -(paddingWidth + wallWidth -cellSize)/2)
             + location + Vector2(0, extra),
         size: Vector2(wallWidth, paddingWidth + wallWidth + extra),
-        color: colorPalette.activeElementText
+        color: color
     );
   }
 
@@ -229,7 +231,7 @@ class CellComponent {
     return WallComponent(
         location: Vector2(0, -passageWidth/2 - wallWidth/2) + location,
         size: Vector2(cellSize - paddingWidth*2, wallWidth),
-        color: colorPalette.activeElementText
+        color: color
     );
   }
 
@@ -237,7 +239,7 @@ class CellComponent {
     return WallComponent(
       location: Vector2(0, passageWidth/2 + wallWidth/2) + location,
       size: Vector2(cellSize - paddingWidth*2, wallWidth),
-      color: colorPalette.activeElementText
+      color: color
     );
   }
 
@@ -245,7 +247,7 @@ class CellComponent {
     return WallComponent(
       location: Vector2(-(passageWidth + wallWidth)/2, 0) + location,
       size: Vector2(wallWidth, passageWidth + wallWidth*2),
-      color: colorPalette.activeElementText
+      color: color
     );
   }
 
@@ -253,7 +255,7 @@ class CellComponent {
     return WallComponent(
         location: Vector2(passageWidth/2 + wallWidth/2, 0) + location,
         size: Vector2(wallWidth, passageWidth + wallWidth*2),
-        color: colorPalette.activeElementText
+        color: color
     );
 
   }

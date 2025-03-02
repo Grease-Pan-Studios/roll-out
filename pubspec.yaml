@@ -104,6 +104,7 @@ flutter:
     - assets/images/ui_elements/
     - assets/paths/path_1/section_1/
     - assets/paths/path_1/section_2/
+    - assets/paths/path_1/section_3/
     - assets/paths/path_2/section_1/
     - assets/paths/path_2/section_2/
 

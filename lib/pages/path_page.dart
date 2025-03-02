@@ -4,7 +4,7 @@ import 'package:amaze_game/services/haptic_engine_service.dart';
 import 'package:amaze_game/services/storage_service.dart';
 import 'package:flutter/material.dart';
 
-import 'package:amaze_game/logical/page_logic.dart';
+import 'package:amaze_game/logical/path_logic.dart';
 import 'package:amaze_game/logical/color_palette_logic.dart';
 
 import 'package:amaze_game/ui_components/page_section.dart';
@@ -14,7 +14,7 @@ import 'package:amaze_game/states/settings_state.dart';
 
 class PathPage extends StatelessWidget {
 
-  final PageLogic pathwayLogic;
+  final PathLogic pathwayLogic;
   final GameState gameState;
   final SettingsState settingsState;
   final HapticEngineService hapticEngine;

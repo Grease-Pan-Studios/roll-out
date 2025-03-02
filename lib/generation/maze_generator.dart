@@ -7,7 +7,24 @@ import 'package:amaze_game/logical/maze_logic.dart';
 
 class MazeGenerator{
 
-  static MazeLogic getMaze(int sizeX, int sizeY, {int? startX, int? startY, int? goalX, int? goalY, int? seed}){
+  static MazeLogic getMaze(
+      int sizeX,
+      int sizeY,
+      {
+        int? startX,
+        int? startY,
+        int? goalX,
+        int? goalY,
+        required double ballRestitution,
+        required double cellSize,
+        required double passageRatio,
+        required double wallRatio,
+        required Duration threeStarThreshold,
+        required Duration twoStarThreshold,
+        required Duration oneStarThreshold,
+        int? seed
+      }
+  ){
 
 
     seed ??= DateTime.now().millisecondsSinceEpoch;
@@ -26,13 +43,15 @@ class MazeGenerator{
         startPositionY: startPositionY,
         goalPositionX: goalPositionX,
         goalPositionY: goalPositionY,
-        threeStarThreshold: Duration(seconds: 10),
-        twoStarThreshold: Duration(seconds: 20),
-        oneStarThreshold: Duration(seconds: 30),
+        threeStarThreshold: threeStarThreshold,
+        twoStarThreshold: twoStarThreshold,
+        oneStarThreshold: oneStarThreshold,
+        cellSize: cellSize,
+        passageRatio: passageRatio,
+        wallRatio: wallRatio,
+        ballRestitution: ballRestitution,
         seedUsed: seed,
     );
-
-
 
 
     int start = random.nextInt(sizeX * sizeY);

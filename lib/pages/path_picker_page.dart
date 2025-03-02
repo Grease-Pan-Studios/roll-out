@@ -43,52 +43,68 @@ class PathPickerPage extends StatefulWidget {
 
 class _PathPickerPageState extends State<PathPickerPage> {
 
-  void _onPageChanged(int index) {
 
-    if (index < widget.gameLogic.pages.length){
+  late List<Widget> _paths;
+
+  final bool unlockAllPaths = true;
+
+  void _onPageChanged(int index) {
+    if (index + 1 == _paths.length){
       widget.colorPalette.update(
-        ColorPaletteLogic.fromHue(
-            widget.gameLogic.pages[index].hue,
-          isDarkMode: widget.settingsState.isDarkMode,
-        ),
+        ColorPaletteLogic.asMonochrome(isDarkMode: widget.settingsState.isDarkMode),
       );
     }else{
       widget.colorPalette.update(
-        ColorPaletteLogic.asMonochrome(isDarkMode: widget.settingsState.isDarkMode),
+        ColorPaletteLogic.fromHue(
+          widget.gameLogic.pages[index].hue,
+          isDarkMode: widget.settingsState.isDarkMode,
+        ),
       );
     }
   }
 
-  @override
-  void initState() {
-    super.initState();
-    // widget.gameState.setUpdateTrigger(_triggerPageUpdate);
-  }
+  List<Widget> _unlockedPaths(){
 
+    List<Widget> unlockedPaths = [];
 
-  @override
-  Widget build(BuildContext context) {
-    return PageView(
-      controller: PageController(
-        initialPage: 2,
-      ),
-      onPageChanged: _onPageChanged,
-      children: List<Widget>.generate(
-        growable: true,
-        widget.gameLogic.pages.length,
-        (index) {
-          final pathwayLogic = widget.gameLogic.pages[index];
-          return PathPage(
-            pathwayLogic: pathwayLogic,
+    for (int i = 0; i < widget.gameLogic.pages.length; i++){
+      unlockedPaths.add(
+          PathPage(
+            pathwayLogic: widget.gameLogic.pages[i],
             storageService: widget.storageService,
             settingsState: widget.settingsState,
             gameState: widget.gameState,
             hapticEngine: widget.hapticEngine,
             audioPlayer: widget.audioPlayer,
             colorPalette: widget.colorPalette,
-          );
-        },
-      ) + [ComingSoonPage(settingsState: widget.settingsState,)],
+          )
+      );
+
+      if (!unlockAllPaths && !widget.gameState.isPageCompleted(
+          pageLogic: widget.gameLogic.pages[i])){
+        break;
+      }
+    }
+
+    return unlockedPaths;
+
+  }
+
+
+  void _buildPages(){
+    _paths = _unlockedPaths();
+    _paths.add(ComingSoonPage(settingsState: widget.settingsState,));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    _buildPages();
+    return PageView(
+      controller: PageController(
+        initialPage: 0,
+      ),
+      onPageChanged: _onPageChanged,
+      children: _paths,
 
     );
     //   Material(
