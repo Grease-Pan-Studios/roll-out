@@ -11,13 +11,16 @@ import 'package:amaze_game/logical/game_logic.dart';
 
 import 'package:amaze_game/pages/coming_soon_page.dart';
 import 'package:amaze_game/pages/path_page.dart';
+import 'package:amaze_game/ui_overlays/indicator_tag.dart';
 
 import 'package:amaze_game/states/game_state.dart';
 
 import 'package:amaze_game/services/storage_service.dart';
 
+
 class PathPickerPage extends StatefulWidget {
 
+  final bool shouldShowIndicator;
   final GameLogic gameLogic;
   final GameState gameState;
   final SettingsState settingsState;
@@ -35,6 +38,7 @@ class PathPickerPage extends StatefulWidget {
     required this.hapticEngine,
     required this.colorPalette,
     required this.storageService,
+    required this.shouldShowIndicator,
   });
 
   @override
@@ -47,6 +51,8 @@ class _PathPickerPageState extends State<PathPickerPage> {
   late List<Widget> _paths;
 
   final bool unlockAllPaths = true;
+
+  final GlobalKey<IndicatorTagState> indicatorKey = GlobalKey<IndicatorTagState>();
 
   void _onPageChanged(int index) {
     if (index + 1 == _paths.length){
@@ -97,34 +103,60 @@ class _PathPickerPageState extends State<PathPickerPage> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  void didUpdateWidget(covariant PathPickerPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
     _buildPages();
-    return PageView(
-      controller: PageController(
-        initialPage: 0,
-      ),
-      onPageChanged: _onPageChanged,
-      children: _paths,
+    if (widget.shouldShowIndicator && !oldWidget.shouldShowIndicator){
+      displayIndicator();
+    }
 
+  }
+
+  @override
+  void initState(){
+    super.initState();
+    _buildPages();
+  }
+
+  void displayIndicator(){
+    /*Show after 5 seconds */
+    Future.delayed(Duration(seconds: 2), (){
+      indicatorKey.currentState?.show();
+
+      /*Hide after 10 seconds */
+      Future.delayed(Duration(seconds: 10), (){
+        indicatorKey.currentState?.hide();
+      });
+
+    });
+  }
+
+
+
+  @override
+  Widget build(BuildContext context) {
+    // _buildPages(); // Need to call each time for Color Updates
+    return Material(
+      color: widget.colorPalette.secondary,
+      child: Stack(
+        children: [
+          PageView(
+            controller: PageController(
+              initialPage: 0,
+            ),
+            onPageChanged: _onPageChanged,
+            children: _paths,
+      
+          ),
+          // moreModesIndicator
+          IndicatorTag(
+            key: indicatorKey,
+            colorPalette: widget.colorPalette,
+          )
+        ],
+      ),
     );
-    //   Material(
-    //     color: Color(0xffBDE0FE),
-    //     child: Padding(
-    //       padding: const EdgeInsets.all(20.0),
-    //       child: Column(
-    //         mainAxisAlignment: MainAxisAlignment.start,
-    //         crossAxisAlignment: CrossAxisAlignment.start,
-    //         children: gameLogic.pathways[0].sections.map(
-    //             (SectionLogic) {
-    //               return PathSection(
-    //                 sectionLogic: SectionLogic,
-    //               );
-    //             }
-    //         ).toList()
-    //         // [PathSection(),],
-    //       ),
-    //     ),
-    // );
+
   }
 }
 

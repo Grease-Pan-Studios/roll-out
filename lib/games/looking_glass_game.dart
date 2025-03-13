@@ -13,7 +13,8 @@ class LookingGlassGame extends StandardGame{
     required super.colorPalette,
     required super.exitGameCallback,
     required super.hapticEngine,
-    required super.audioPlayer
+    required super.audioPlayer,
+    required super.settingsState,
   });
 
 
@@ -27,11 +28,6 @@ class LookingGlassGame extends StandardGame{
         colorPalette: colorPalette,
         levelCompletionCallback: triggerGameCompletion
     );
-  }
-
-  @override
-  String getTime(){
-    return "LOOKING GLASS";
   }
 
 }

@@ -59,8 +59,8 @@ class PageSection extends StatelessWidget {
               crossAxisCount: 5,
               shrinkWrap: true,
               childAspectRatio: 0.92,
-              mainAxisSpacing: 15,
-              crossAxisSpacing: 15,
+              mainAxisSpacing: 10,
+              crossAxisSpacing: 8,
               physics: NeverScrollableScrollPhysics(),
               children: List.generate(
                 sectionLogic.levels.length,

@@ -26,8 +26,9 @@ void main()async {
 
   runApp(
       const MaterialApp(
-        home: SafeArea(
-            child: LauncherPage(),
+        debugShowCheckedModeBanner: false,
+          home: SafeArea(
+           child: LauncherPage(),
         ),
       )
   );

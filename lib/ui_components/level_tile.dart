@@ -83,94 +83,97 @@ class LevelTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return TextButton(
-        style: ButtonStyle(
-          enableFeedback: true,
-          backgroundColor: WidgetStateProperty.all<Color>(bgColor),
-          minimumSize: WidgetStateProperty.all<Size>(Size(58, 63)),
-          overlayColor: WidgetStateProperty.all<Color>(textColor.withAlpha(50)),
-          shape: WidgetStateProperty.all<RoundedRectangleBorder>(
-            RoundedRectangleBorder(
-              side: BorderSide(
-                color: borderColor,
-                width: 3.0,
-                strokeAlign: BorderSide.strokeAlignCenter
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 2.0),
+      child: TextButton(
+          style: ButtonStyle(
+            enableFeedback: true,
+            backgroundColor: WidgetStateProperty.all<Color>(bgColor),
+            minimumSize: WidgetStateProperty.all<Size>(Size(58, 63)),
+            overlayColor: WidgetStateProperty.all<Color>(textColor.withAlpha(50)),
+            shape: WidgetStateProperty.all<RoundedRectangleBorder>(
+              RoundedRectangleBorder(
+                side: BorderSide(
+                  color: borderColor,
+                  width: 3.0,
+                  strokeAlign: BorderSide.strokeAlignCenter
+                ),
+                borderRadius: BorderRadius.circular(10.0),
               ),
-              borderRadius: BorderRadius.circular(10.0),
             ),
           ),
-        ),
-        onPressed: () {
+          onPressed: () {
 
-          if (levelState.state == LevelStateEnum.locked){
-            return;
-          }
+            if (levelState.state == LevelStateEnum.locked){
+              return;
+            }
 
-          hapticEngine.selection();
+            hapticEngine.selection();
 
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => LevelPage(
-              levelIndex: levelIndex,
-              sectionLogic: sectionLogic,
-              gameState: gameState,
-              hapticEngine: hapticEngine,
-              audioPlayer: audioPlayer,
-              colorPalette: colorPalette,
-              storageService: storageService,
-              settingsState: settingsState,
-            )),
-          );
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => LevelPage(
+                levelIndex: levelIndex,
+                sectionLogic: sectionLogic,
+                gameState: gameState,
+                hapticEngine: hapticEngine,
+                audioPlayer: audioPlayer,
+                colorPalette: colorPalette,
+                storageService: storageService,
+                settingsState: settingsState,
+              )),
+            );
 
-        },
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
+          },
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
 
-          children: [
-            Text(
-                (levelIndex+1).toString(),
-                style: TextStyle(
-                  fontFamily: 'Advent',
-                  fontWeight: FontWeight.w600,
-                  color: textColor,
-                  height: 1,
-                  fontSize: 32,
-                  letterSpacing: -0.96,
-                )
-            ),
-
-            if (levelState.isCompleted())
-              FittedBox(
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    ImageIcon(
-                      levelState.rating >= 1 ? filledStar : emptyStar,
-                      size: 12,
-                      color: borderColor,
-                    ),
-                    ImageIcon(
-                      levelState.rating >= 2 ? filledStar : emptyStar,
-                      size: 12,
-                      color: borderColor,
-                    ),
-                    ImageIcon(
-                      levelState.rating >= 3 ? filledStar : emptyStar,
-                      size: 12,
-                      color: borderColor,
-                    ),
-                  ],
-                ),
+            children: [
+              Text(
+                  (levelIndex+1).toString(),
+                  style: TextStyle(
+                    fontFamily: 'Advent',
+                    fontWeight: FontWeight.w600,
+                    color: textColor,
+                    height: 1,
+                    fontSize: 32,
+                    letterSpacing: -0.96,
+                  )
               ),
 
-          ],
-        )
+              if (levelState.isCompleted())
+                FittedBox(
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      ImageIcon(
+                        levelState.rating >= 1 ? filledStar : emptyStar,
+                        size: 12,
+                        color: borderColor,
+                      ),
+                      ImageIcon(
+                        levelState.rating >= 2 ? filledStar : emptyStar,
+                        size: 12,
+                        color: borderColor,
+                      ),
+                      ImageIcon(
+                        levelState.rating >= 3 ? filledStar : emptyStar,
+                        size: 12,
+                        color: borderColor,
+                      ),
+                    ],
+                  ),
+                ),
 
-      // ),
+            ],
+          )
+
+        // ),
+      ),
     );
   }
 

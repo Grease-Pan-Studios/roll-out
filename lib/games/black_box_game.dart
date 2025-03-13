@@ -12,7 +12,8 @@ class BlackBoxGame extends StandardGame{
     required super.colorPalette,
     required super.exitGameCallback,
     required super.hapticEngine,
-    required super.audioPlayer
+    required super.audioPlayer,
+    required super.settingsState,
   });
 
 
@@ -26,11 +27,6 @@ class BlackBoxGame extends StandardGame{
       colorPalette: colorPalette,
       levelCompletionCallback: triggerGameCompletion
     );
-  }
-
-  @override
-  String getTime(){
-    return "DARK MODE";
   }
 
 }

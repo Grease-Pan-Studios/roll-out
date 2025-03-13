@@ -139,6 +139,7 @@ class _LevelPageState extends State<LevelPage> with SingleTickerProviderStateMix
         hapticEngine: widget.hapticEngine,
         audioPlayer: widget.audioPlayer,
         exitGameCallback: _triggerExit,
+        settingsState: widget.settingsState,
       );
     }else if(widget.sectionLogic.gameType == GameType.lookingGlass){
 
@@ -148,6 +149,7 @@ class _LevelPageState extends State<LevelPage> with SingleTickerProviderStateMix
         hapticEngine: widget.hapticEngine,
         audioPlayer: widget.audioPlayer,
         exitGameCallback: _triggerExit,
+        settingsState: widget.settingsState,
       );
 
     }else{
@@ -157,6 +159,7 @@ class _LevelPageState extends State<LevelPage> with SingleTickerProviderStateMix
         hapticEngine: widget.hapticEngine,
         audioPlayer: widget.audioPlayer,
         exitGameCallback: _triggerExit,
+        settingsState: widget.settingsState,
       );
     }
   }

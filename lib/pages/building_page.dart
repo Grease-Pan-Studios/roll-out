@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'package:amaze_game/games/builder_game.dart';
 import 'package:amaze_game/logical/color_palette_logic.dart';
+import 'package:amaze_game/states/game_type_state.dart';
+import 'package:amaze_game/states/settings_state.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:flame/game.dart';
@@ -15,12 +17,14 @@ class BuildingPage extends StatefulWidget {
   final ColorPaletteLogic colorPalette;
   final HapticEngineService hapticEngine;
   final AudioPlayerService audioPlayer;
+  final SettingsState settingsState;
 
   const BuildingPage({
     super.key,
     required this.hapticEngine,
     required this.colorPalette,
     required this.audioPlayer,
+    required this.settingsState,
   });
 
   @override
@@ -28,8 +32,9 @@ class BuildingPage extends StatefulWidget {
 }
 
 class _BuildingPageState extends State<BuildingPage> {
-  int width = 14;
-  int height = 18;
+
+  int width = 10;
+  int height = 15;
 
   int? startPositionX = 3;
   int? startPositionY = 0;
@@ -37,10 +42,10 @@ class _BuildingPageState extends State<BuildingPage> {
   int? goalPositionX = 5;
   int? goalPositionY = 4;
 
-  double ballRestitution = 0.5;
+  double ballRestitution = 0.8; //0.85;
 
   double cellSize = MazeLogic.defaultCellSize;
-  double passageRatio = 0.54;
+  double passageRatio = 0.57;
   // MazeLogic.defaultPassageRatio;
   double wallRatio = 0.16;
   // MazeLogic.defaultWallRatio;
@@ -49,12 +54,12 @@ class _BuildingPageState extends State<BuildingPage> {
   Duration twoStarThreshold = Duration(seconds: 20);
   Duration oneStarThreshold = Duration(seconds: 30);
 
-  int? seedUsed = 1740914647581;
+  int? seedUsed;
 
   bool seedLocked = true;
 
-  String? fromFile;
-
+  String? fromFile;//= "assets/paths/path_3/section_1/4.json";
+  GameType gameType = GameType.lookingGlass;
   late MazeLogic mazeLogic;
   late BuilderGame game;
 
@@ -90,7 +95,7 @@ class _BuildingPageState extends State<BuildingPage> {
       seed: seedUsed,
     );
     mazeLogic.adjustStartAndGoal();
-    mazeLogic.estimateTimeThreshold();
+    mazeLogic.estimateTimeThreshold(gameType);
 
   }
 
@@ -100,6 +105,7 @@ class _BuildingPageState extends State<BuildingPage> {
       colorPalette: widget.colorPalette,
       hapticEngine: widget.hapticEngine,
       audioPlayer: widget.audioPlayer,
+      settingsState: widget.settingsState,
       exitGameCallback: ({
         required bool isComplete,
         required Duration completionTime,
@@ -114,6 +120,10 @@ class _BuildingPageState extends State<BuildingPage> {
     final String levelString = await rootBundle.loadString(fromFile!);
     final Map<String, dynamic> levelMap = json.decode(levelString);
     mazeLogic = MazeLogic.fromJson(levelMap);
+
+    mazeLogic.estimateTimeThreshold(gameType);
+
+
     _buildGame();
 
 

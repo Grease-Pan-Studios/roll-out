@@ -10,6 +10,7 @@ import 'package:flame_forge2d/flame_forge2d.dart';
 import 'package:flame/components.dart';
 
 import 'package:amaze_game/mazes/standard_maze.dart';
+import 'package:amaze_game/states/settings_state.dart';
 
 
 class StandardGame extends Forge2DGame{
@@ -18,6 +19,7 @@ class StandardGame extends Forge2DGame{
   final ColorPaletteLogic colorPalette;
   final HapticEngineService hapticEngine;
   final AudioPlayerService audioPlayer;
+  final SettingsState settingsState;
   final void Function({
     required bool isComplete,
     required int rating,
@@ -36,6 +38,7 @@ class StandardGame extends Forge2DGame{
     required this.exitGameCallback,
     required this.hapticEngine,
     required this.audioPlayer,
+    required this.settingsState,
   }) : super(
     world: Forge2DWorld(gravity: Vector2(0, 10)),
     zoom: 100
@@ -112,7 +115,7 @@ class StandardGame extends Forge2DGame{
   }
 
   void initializeController(){
-    controller = Controller();
+    controller = Controller(settingsState: settingsState);
   }
 
   void initializeMaze(){

@@ -6,6 +6,8 @@ import 'package:flame_forge2d/flame_forge2d.dart';
 import 'package:amaze_game/logical/cell_logic.dart';
 import 'package:amaze_game/logical/section_logic.dart';
 
+import 'package:amaze_game/states/game_type_state.dart';
+
 class MazeLogic {
 
   /* Dimensions of the maze (x, y) */
@@ -317,7 +319,7 @@ class MazeLogic {
   }
 
   // Method to calculate path metrics: distance and number of turns.
-  void estimateTimeThreshold() {
+  void estimateTimeThreshold(GameType gameType) {
     // Convert start and goal positions to indices.
     int startIndex = startPositionX + startPositionY * width;
     int goalIndex = goalPositionX + goalPositionY * width;
@@ -393,43 +395,84 @@ class MazeLogic {
     // Distance in cells is the number of steps between start and goal.
     int steps = pathIndices.length - 1;
 
-    double stepBuffer = 0.1; // For easy
-    int fullBuffer = 1; // For easy
 
-    double timePerStep1 = 0.48 + stepBuffer;
-    double timePerTurn1 = 0.78 + stepBuffer;
+    if (gameType == GameType.standard){
+      double stepBuffer = 0.1; // For easy
+      int fullBuffer = 1; // For easy
 
-    double timePerStep2 = 0.38 + stepBuffer;
-    double timePerTurn2 = 0.68 + stepBuffer;
+      double timePerStep1 = 0.48 + stepBuffer;
+      double timePerTurn1 = 0.78 + stepBuffer;
 
-    double timePerStep3 = 0.28 + stepBuffer;
-    double timePerTurn3 = 0.53 + stepBuffer;
+      double timePerStep2 = 0.38 + stepBuffer;
+      double timePerTurn2 = 0.68 + stepBuffer;
 
-    int threeStarThreshold = (timePerStep3 * steps + timePerTurn3 * turns).toInt() + fullBuffer;
-    int twoStarThreshold = (timePerStep2 * steps + timePerTurn2 * turns).toInt() + fullBuffer;
-    int oneStarThreshold = (timePerStep1 * steps + timePerTurn1 * turns).toInt() + fullBuffer;
+      double timePerStep3 = 0.28 + stepBuffer;
+      double timePerTurn3 = 0.53 + stepBuffer;
 
-    print("threeStarThreshold: $threeStarThreshold");
-    print("twoStarThreshold: $twoStarThreshold");
-    print("oneStarThreshold: $oneStarThreshold");
+      int threeStarThreshold = (timePerStep3 * steps + timePerTurn3 * turns).toInt() + fullBuffer;
+      int twoStarThreshold = (timePerStep2 * steps + timePerTurn2 * turns).toInt() + fullBuffer;
+      int oneStarThreshold = (timePerStep1 * steps + timePerTurn1 * turns).toInt() + fullBuffer;
 
-    this.oneStarThreshold = Duration(seconds: oneStarThreshold);
-    this.twoStarThreshold = Duration(seconds: twoStarThreshold);
-    this.threeStarThreshold = Duration(seconds: threeStarThreshold);
-    /*return(
-        "\"threeStarThreshold\": $threeStarThreshold,\n"
-        "\"twoStarThreshold\": $twoStarThreshold, \n"
-        "\"oneStarThreshold\": $oneStarThreshold\n"
-    );*/
+      print("threeStarThreshold: $threeStarThreshold");
+      print("twoStarThreshold: $twoStarThreshold");
+      print("oneStarThreshold: $oneStarThreshold");
 
-    // print("oneStarThreshold: ${(timePerStep1 * steps + timePerTurn1 * turns).toInt()}");
+      this.oneStarThreshold = Duration(seconds: oneStarThreshold);
+      this.twoStarThreshold = Duration(seconds: twoStarThreshold);
+      this.threeStarThreshold = Duration(seconds: threeStarThreshold);
+    }else if (gameType == GameType.bouncy){
 
-    // Map<String, dynamic> thresholds = {
-    //   'threeStarThreshold': (timePerStep3 * steps + timePerTurn3 * turns).toInt(),
-    //   'twoStarThreshold': (timePerStep2 * steps + timePerTurn2 * turns).toInt(),
-    //   'oneStarThreshold': (timePerStep1 * steps + timePerTurn1 * turns).toInt(),
-    // };
+      double stepBuffer = 0.18; // For medium  //0.25; // For easy
+      int fullBuffer = 1; // For easy
 
+      double timePerStep1 = 0.48 + stepBuffer;
+      double timePerTurn1 = 0.88 + stepBuffer;
+
+      double timePerStep2 = 0.38 + stepBuffer;
+      double timePerTurn2 = 0.78 + stepBuffer;
+
+      double timePerStep3 = 0.28 + stepBuffer;
+      double timePerTurn3 = 0.63 + stepBuffer;
+
+      int threeStarThreshold = (timePerStep3 * steps + timePerTurn3 * turns).toInt() + fullBuffer;
+      int twoStarThreshold = (timePerStep2 * steps + timePerTurn2 * turns).toInt() + fullBuffer;
+      int oneStarThreshold = (timePerStep1 * steps + timePerTurn1 * turns).toInt() + fullBuffer;
+
+      print("threeStarThreshold: $threeStarThreshold");
+      print("twoStarThreshold: $twoStarThreshold");
+      print("oneStarThreshold: $oneStarThreshold");
+
+      this.oneStarThreshold = Duration(seconds: oneStarThreshold);
+      this.twoStarThreshold = Duration(seconds: twoStarThreshold);
+      this.threeStarThreshold = Duration(seconds: threeStarThreshold);
+
+
+    }else if (GameType.lookingGlass == gameType){
+
+      double stepBuffer = 0.2; // For easy // 0.15; // For medium  //
+      int fullBuffer = 1; // For easy
+
+      double timePerStep1 = 0.48 + stepBuffer;
+      double timePerTurn1 = 0.88 + stepBuffer;
+
+      double timePerStep2 = 0.38 + stepBuffer;
+      double timePerTurn2 = 0.78 + stepBuffer;
+
+      double timePerStep3 = 0.28 + stepBuffer;
+      double timePerTurn3 = 0.63 + stepBuffer;
+
+      int threeStarThreshold = (timePerStep3 * steps + timePerTurn3 * turns).toInt() + fullBuffer;
+      int twoStarThreshold = (timePerStep2 * steps + timePerTurn2 * turns).toInt() + fullBuffer;
+      int oneStarThreshold = (timePerStep1 * steps + timePerTurn1 * turns).toInt() + fullBuffer;
+
+      print("threeStarThreshold: $threeStarThreshold");
+      print("twoStarThreshold: $twoStarThreshold");
+      print("oneStarThreshold: $oneStarThreshold");
+
+      this.oneStarThreshold = Duration(seconds: oneStarThreshold);
+      this.twoStarThreshold = Duration(seconds: twoStarThreshold);
+      this.threeStarThreshold = Duration(seconds: threeStarThreshold);
+    }
 
 
 
@@ -438,6 +481,14 @@ class MazeLogic {
 
   void adjustStartAndGoal(){
     List<Vector2> diameter = findMazeDiameter();
+
+    Random random = Random(seedUsed);
+    if (random.nextBool()){
+      Vector2 temp = diameter[0];
+      diameter[0] = diameter[1];
+      diameter[1] = temp;
+    }
+
     Vector2 start = diameter[0];
     Vector2 goal = diameter[1];
     startPositionX = start.x.toInt();

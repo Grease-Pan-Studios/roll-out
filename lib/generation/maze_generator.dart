@@ -56,8 +56,6 @@ class MazeGenerator{
 
     int start = random.nextInt(sizeX * sizeY);
 
-
-
     Set<int> visited = {start};
 
     List<int> stack = [start];

@@ -37,6 +37,7 @@ void main() async {
           audioPlayer: audioPlayer,
           hapticEngine: hapticEngine,
           colorPalette: colorPalette,
+          settingsState: settingsState,
         )
     ),
   ));

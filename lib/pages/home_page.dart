@@ -41,8 +41,10 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
 
   final PanelController _panelController = PanelController();
+  late int _pageBuildCount;
 
   double _panelSlide = 0.0;
+
 
   void _updateHomePage(){
     setState(() {
@@ -64,9 +66,23 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  void _onPanelOpen(){
+
+    setState(() {
+      if (_pageBuildCount == 0){
+        _pageBuildCount = 1;
+      }else{
+        _pageBuildCount = 2;
+      }
+    });
+
+  }
+
+
   @override
   void initState() {
     super.initState();
+    _pageBuildCount = 0;
     widget.colorPalette.setUpdateTrigger(_updateHomePage);
     widget.gameState.setUpdateTrigger(_updateHomePage);
   }
@@ -76,7 +92,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return SlidingUpPanel(
 
-      // defaultPanelState: PanelState.OPEN,
+      onPanelOpened: _onPanelOpen,
 
       color: widget.colorPalette.secondary,
       parallaxOffset: 0,
@@ -88,6 +104,7 @@ class _HomePageState extends State<HomePage> {
         hapticEngine: widget.hapticEngine,
         audioPlayer: widget.audioPlayer,
         colorPalette: widget.colorPalette,
+        shouldShowIndicator: _pageBuildCount == 1,
       ),
 
       collapsed: Material(

@@ -85,7 +85,6 @@ class _SettingsCardState extends State<SettingsCard> {
   Widget build(BuildContext context) {
     return Padding(
       padding: EdgeInsets.symmetric(
-        // 20 % of screen
         horizontal: (MediaQuery.of(context).size.width - 300) / 2,
         vertical: (MediaQuery.of(context).size.height - 540) / 2
       ),
@@ -177,6 +176,9 @@ class _SettingsCardState extends State<SettingsCard> {
                             state: widget.settingsState.hapticEnabled,
                             setState: (bool state) {
                               widget.settingsState.hapticEnabled = state;
+                              if (state) {
+                                widget.hapticEngine.selection();
+                              }
                               setState(() {});
                             },
                             colorPalette: widget.colorPalette,
@@ -222,33 +224,6 @@ class _SettingsCardState extends State<SettingsCard> {
                         children: [
                           Text(
                               "Tilt Sensitivity",
-                              style: TextStyle(
-                                fontFamily: 'Advent',
-                                color: widget.colorPalette.activeElementText,
-                                fontSize: 20,
-                                fontWeight: FontWeight.w600,
-                                letterSpacing: -0.6,
-                              )
-                          ),
-                          InputSlider(
-                              value: widget.settingsState.tiltSensitivity,
-                              onChange: (double value){
-                                setState(() {
-                                  widget.settingsState.tiltSensitivity = value;
-                                });
-                              },
-                              colorPalette: widget.colorPalette
-                          )
-                        ],
-                      ),
-
-                      const SizedBox(height: 15),
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                              "Tilt Range",
                               style: TextStyle(
                                 fontFamily: 'Advent',
                                 color: widget.colorPalette.activeElementText,

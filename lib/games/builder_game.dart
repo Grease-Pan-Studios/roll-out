@@ -8,7 +8,8 @@ class BuilderGame extends StandardGame{
     required super.colorPalette,
     required super.exitGameCallback,
     required super.hapticEngine,
-    required super.audioPlayer
+    required super.audioPlayer,
+    required super.settingsState,
   });
 
 
