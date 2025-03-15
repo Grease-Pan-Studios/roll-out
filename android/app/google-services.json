@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "847300604455",
+    "project_id": "roll-out-gps",
+    "storage_bucket": "roll-out-gps.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:847300604455:android:01d7ba075bc7951cc31402",
+        "android_client_info": {
+          "package_name": "com.greasepanstudios.amaze_game"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "847300604455-fj1ck7se6o1m8hldpgpgmhhjq38tu80g.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.greasepanstudios.amaze_game",
+            "certificate_hash": "cf9f495809f5a3cced573cdb6853a2e486e6ffe3"
+          }
+        },
+        {
+          "client_id": "847300604455-vvu5fv8301pi568tlf7p1ilsrttmfe7g.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBWOFzPy7cLxv3GxJDbUw9L5rJFbM-4Ob4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "847300604455-vvu5fv8301pi568tlf7p1ilsrttmfe7g.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

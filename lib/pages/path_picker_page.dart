@@ -120,11 +120,11 @@ class _PathPickerPageState extends State<PathPickerPage> {
 
   void displayIndicator(){
     /*Show after 5 seconds */
-    Future.delayed(Duration(seconds: 2), (){
+    Future.delayed(Duration(milliseconds: 400), (){
       indicatorKey.currentState?.show();
 
       /*Hide after 10 seconds */
-      Future.delayed(Duration(seconds: 10), (){
+      Future.delayed(Duration(seconds: 5), (){
         indicatorKey.currentState?.hide();
       });
 

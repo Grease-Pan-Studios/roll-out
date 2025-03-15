@@ -36,6 +36,12 @@
             android:value="2" />
         <meta-data android:name="io.flutter.embedding.android.EnableImpeller"
             android:value="false" />
+        <meta-data
+            android:name="com.google.android.gms.games.APP_ID"
+            android:value="1084671101651" />
+        <meta-data
+            android:name="io.revoltgames.game_services_firebase_auth.OAUTH_2_WEB_CLIENT_ID"
+            android:value="847300604455-vvu5fv8301pi568tlf7p1ilsrttmfe7g.apps.googleusercontent.com" />
     </application>
     <!-- Required to query activities that can process text, see:
          https://developer.android.com/training/package-visibility and

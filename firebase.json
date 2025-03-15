@@ -1,0 +1,1 @@
+{"flutter":{"platforms":{"android":{"default":{"projectId":"roll-out-gps","appId":"1:847300604455:android:01d7ba075bc7951cc31402","fileOutput":"android/app/google-services.json"}},"dart":{"lib/firebase_options.dart":{"projectId":"roll-out-gps","configurations":{"android":"1:847300604455:android:01d7ba075bc7951cc31402","ios":"1:847300604455:ios:fed662f05101a564c31402"}}}}}}

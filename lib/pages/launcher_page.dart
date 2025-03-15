@@ -1,4 +1,5 @@
 
+import 'package:amaze_game/logical/user_logic.dart';
 import 'package:amaze_game/pages/home_page.dart';
 import 'package:amaze_game/pages/login_page.dart';
 import 'package:amaze_game/services/audio_player_service.dart';
@@ -24,9 +25,10 @@ class LauncherPage extends StatefulWidget {
 
 class _LauncherPageState extends State<LauncherPage> {
 
-  bool _showLogin = true;
-
+  bool _showLogin = false; // true
   bool _hasLoaded = false;
+
+  late UserLogic userLogic;
 
   late GameLogic gameLogic;
   late GameState gameState;
@@ -36,44 +38,53 @@ class _LauncherPageState extends State<LauncherPage> {
   late AudioPlayerService audioPlayer;
   late StorageService storageService;
 
+  void _updateLauncherPage(){
+    setState((){
+      userLogic.setUpdateTrigger(_updateLauncherPage);
+    });
+  }
+
   void _loadGame() async {
 
+    userLogic = UserLogic();
+    // await userLogic.initialize();
+    // userLogic.setUpdateTrigger(_updateLauncherPage);
+
+    /* Initialize the storage service */
     storageService = StorageService();
     await storageService.initialize();
 
+    /* Initialize the game logic */
     gameLogic = GameLogic();
     gameLogic.fetchGameLogic();
 
+    /* Initialize the game state */
     gameState = GameState(
       storageService: storageService
     );
-
     await gameState.initialize();
 
+    /* Initialize the settings state */
     settingsState = storageService.getSettingsState();
 
+    /* Initialize the audio player */
     audioPlayer = AudioPlayerService(
       sfxAssets:["assets/audio/sfx/tap-dull-1.wav"],
       settingsState: settingsState
     );
-
     await audioPlayer.initialize();
 
+    /* Initialize the haptic engine */
     hapticEngine = HapticEngineService(
         settingsState: settingsState
     );
-
     await hapticEngine.initialize();
 
     colorPalette = ColorPaletteLogic.fromHue(
         208, isDarkMode: settingsState.isDarkMode
     );
 
-    Future.delayed(Duration(seconds: 0), () {
-      setState(() {
-        _hasLoaded = true;
-      });
-    });
+    setState(()=> _hasLoaded = true);
 
   }
 
@@ -87,15 +98,7 @@ class _LauncherPageState extends State<LauncherPage> {
   Widget build(BuildContext context) {
     return
         _hasLoaded ?
-          // _showLogin ? LoginPage(
-          //   colorPalette: colorPalette,
-          //   goToGame: () {
-          //     setState(() {
-          //       _showLogin = false;
-          //     });
-          //   },
-          // ):
-          HomePage(
+          (!_showLogin || userLogic.isLoggedIn()) ? HomePage(
               gameLogic: gameLogic,
               gameState: gameState,
               settingsState: settingsState,
@@ -103,7 +106,15 @@ class _LauncherPageState extends State<LauncherPage> {
               audioPlayer: audioPlayer,
               colorPalette: colorPalette,
               storageService: storageService,
-          ): Material(
+          ) :LoginPage(
+            colorPalette: colorPalette,
+            userLogic: userLogic,
+            goToGame: () {
+              setState(() {
+                _showLogin = false;
+              });
+            },
+          ) : Material(
             color: ColorPaletteLogic.asBlackTheme().activeElementBackground,
             child: Align(
               alignment: Alignment(-0.1, -0.1),

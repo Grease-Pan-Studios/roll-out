@@ -92,6 +92,8 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return SlidingUpPanel(
 
+      defaultPanelState: PanelState.OPEN,
+
       onPanelOpened: _onPanelOpen,
 
       color: widget.colorPalette.secondary,

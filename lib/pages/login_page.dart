@@ -1,17 +1,21 @@
 
-import 'package:amaze_game/logical/color_palette_logic.dart';
-import 'package:amaze_game/ui_components/login_form.dart';
 import 'package:flutter/material.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
+
+import 'package:amaze_game/logical/color_palette_logic.dart';
+import 'package:amaze_game/logical/user_logic.dart';
+import 'package:amaze_game/ui_components/login_form.dart';
 
 class LoginPage extends StatefulWidget {
 
   final ColorPaletteLogic colorPalette;
+  final UserLogic userLogic;
   final VoidCallback goToGame;
 
   const LoginPage({
     super.key,
     required this.colorPalette,
+    required this.userLogic,
     required this.goToGame,
   });
 
@@ -31,6 +35,7 @@ class _LoginPageState extends State<LoginPage> {
       defaultPanelState: PanelState.OPEN,
       panel: LoginForm(
         colorPalette: widget.colorPalette,
+        userLogic: widget.userLogic,
         goToGame: widget.goToGame,
       ),
 
@@ -69,7 +74,6 @@ class _LoginPageState extends State<LoginPage> {
           )
         ),
       ),
-
       minHeight: 50.0,  // Height of the collapsed panel
       maxHeight: 400,
       controller: _panelController,

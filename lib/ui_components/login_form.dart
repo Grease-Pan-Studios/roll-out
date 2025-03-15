@@ -1,19 +1,23 @@
 
-import 'dart:ffi';
-
-import 'package:amaze_game/logical/color_palette_logic.dart';
+import 'package:amaze_game/services/game_service.dart';
 import 'package:flutter/material.dart';
+import 'package:games_services/games_services.dart';
+
+import 'package:amaze_game/logical/user_logic.dart';
+import 'package:amaze_game/logical/color_palette_logic.dart';
 
 import 'package:amaze_game/input_elements/button.dart';
 
 class LoginForm extends StatelessWidget {
 
   final ColorPaletteLogic colorPalette;
+  final UserLogic userLogic;
   final VoidCallback goToGame;
 
   const LoginForm({
     super.key,
     required this.colorPalette,
+    required this.userLogic,
     required this.goToGame,
   });
 
@@ -51,7 +55,6 @@ class LoginForm extends StatelessWidget {
                 borderRadius: BorderRadius.circular(10),
               ),
             ),
-
             Padding(
               padding: const EdgeInsets.only(top: 35.0, right: 35, left: 35),
               child: Column(
@@ -80,7 +83,9 @@ class LoginForm extends StatelessWidget {
                   SizedBox(height: 35),
                   Center(
                     child: Button(
-                      onPressed: () {},
+                      onPressed: () {
+                        GameService.login(userLogic);
+                      },
                       text: 'Continue with Google Games',
                       colorPalette: colorPalette,
                       isExpanded: true,

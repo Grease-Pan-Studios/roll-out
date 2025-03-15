@@ -4,6 +4,7 @@ import 'dart:async';
 import 'package:amaze_game/services/audio_player_service.dart';
 import 'package:amaze_game/services/haptic_engine_service.dart';
 import 'package:amaze_game/services/storage_service.dart';
+import 'package:amaze_game/ui_components/unlimited_card.dart';
 import 'package:amaze_game/ui_overlays/indicator_tag.dart';
 import 'package:flutter/material.dart';
 
@@ -59,7 +60,7 @@ class _PathPageState extends State<PathPage> {
   }
 
 
-  List<PageSection> _unlockedSections() {
+  List<Widget> _unlockedSections() {
 
     List<PageSection> unlockedSections = [];
 
@@ -109,7 +110,11 @@ class _PathPageState extends State<PathPage> {
             child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: _unlockedSections(),
+                children: <Widget>[
+                  UnlimitedCard(
+                    colorPalette: widget.colorPalette,
+                  )
+                ] + _unlockedSections(),
             ),
           ),
         ),
