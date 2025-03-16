@@ -10,19 +10,22 @@ class LevelCompletionCard extends StatefulWidget {
   final int rating;
   final String completionTime;
   final ColorPaletteLogic colorPalette;
-  final VoidCallback replayLevelCallback;
+  final VoidCallback? replayLevelCallback;
   final VoidCallback exitLevelCallback;
   final VoidCallback? nextLevelCallback;
 
-  const LevelCompletionCard({
+  LevelCompletionCard({
     super.key,
     required this.rating,
     required this.completionTime,
     required this.colorPalette,
-    required this.replayLevelCallback,
     required this.exitLevelCallback,
+    this.replayLevelCallback,
     this.nextLevelCallback,
-  });
+  }){
+    assert(replayLevelCallback!=null || nextLevelCallback!=null,
+    "Both replayLevelCallback and nextLevelCallback cannot be null");
+  }
 
   @override
   State<LevelCompletionCard> createState() => _LevelCompletionCardState();
@@ -205,10 +208,16 @@ class _LevelCompletionCardState extends State<LevelCompletionCard> with SingleTi
 
                 const SizedBox(height: 30),
 
+                widget.replayLevelCallback == null ? Button(
+                  colorPalette: widget.colorPalette,
+                  text: "Exit",
+                  onPressed: widget.exitLevelCallback,
+                  isDark: false,
+                ) :
                 Button(
                   colorPalette: widget.colorPalette,
                   text: "Once Again?",
-                  onPressed: widget.replayLevelCallback,
+                  onPressed: widget.replayLevelCallback!,
                   isDark: false,
                 ),
 

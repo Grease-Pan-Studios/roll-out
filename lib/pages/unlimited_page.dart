@@ -1,4 +1,7 @@
 
+import 'dart:math';
+
+import 'package:amaze_game/generation/maze_generator.dart';
 import 'package:amaze_game/logical/maze_logic.dart';
 import 'package:amaze_game/logical/color_palette_logic.dart';
 import 'package:amaze_game/logical/section_logic.dart';
@@ -21,12 +24,11 @@ import 'package:amaze_game/games/standard_game.dart';
 import 'package:amaze_game/games/black_box_game.dart';
 import 'package:amaze_game/games/looking_glass_game.dart';
 
-class LevelPage extends StatefulWidget {
+class UnlimitedPage extends StatefulWidget {
 
-  final int levelIndex;
-  final SectionLogic sectionLogic;
 
-  final GameState gameState;
+  final double screenRatio;
+
   final HapticEngineService hapticEngine;
   final AudioPlayerService audioPlayer;
   final ColorPaletteLogic colorPalette;
@@ -34,11 +36,12 @@ class LevelPage extends StatefulWidget {
   final SettingsState settingsState;
   final StorageService storageService;
 
-  const LevelPage({
+  final GameType gameType;
+
+  const UnlimitedPage({
     super.key,
-    required this.levelIndex,
-    required this.sectionLogic,
-    required this.gameState,
+    required this.gameType,
+    required this.screenRatio,
     required this.colorPalette,
     required this.audioPlayer,
     required this.hapticEngine,
@@ -47,27 +50,92 @@ class LevelPage extends StatefulWidget {
   });
 
   @override
-  State<LevelPage> createState() => _LevelPageState();
+  State<UnlimitedPage> createState() => _LevelPageState();
 }
 
-class _LevelPageState extends State<LevelPage> with SingleTickerProviderStateMixin{
+class _LevelPageState extends State<UnlimitedPage> with SingleTickerProviderStateMixin{
 
 
   bool _levelComplete = false;
   int _levelRating = 0;
   String _levelCompletionTime = "00:00:00";
 
+  int _levelNumber = 1;
+
   late MazeLogic mazeLogic;
   late AnimationController _controller;
   late Animation<Alignment> _alignmentAnimation;
   late Animation<double> _opacityAnimation;
   late LevelCompletionCard levelCompletionCard;
-  late VoidCallback? _nextLevelCallback;
-
   late StandardGame _game;
+
+  void initializeMazeLogic(){
+
+    /* Need to determine size */
+    final double levelNumber = _levelNumber.toDouble();
+    double heightHeuristic = max(4, pow(0.5 * levelNumber, 0.5).toDouble());
+
+    double widthHeuristic = max(heightHeuristic * widget.screenRatio, 4);
+
+    int sizeX = widthHeuristic.floor();
+    int sizeY = heightHeuristic.floor();
+
+
+    /* TODO Need to determine difficulty 0 to 1 */
+
+    /* TODO Need to determine ball restitution 0.5 to 0.9 */
+
+    /* TODO Need to determine star thresholds */
+
+    mazeLogic = MazeGenerator.getMaze(
+      sizeX, sizeY,
+      ballRestitution: 0.5,
+      threeStarThreshold: Duration(seconds: 30),
+      twoStarThreshold: Duration(seconds: 60),
+      oneStarThreshold: Duration(seconds: 90),
+    );
+
+  }
+
+  void initializeGameObject(){
+    if (widget.gameType == GameType.blackBox){
+      _game = BlackBoxGame(
+        mazeLogic: mazeLogic,
+        colorPalette: widget.colorPalette,
+        hapticEngine: widget.hapticEngine,
+        audioPlayer: widget.audioPlayer,
+        exitGameCallback: _triggerExit,
+        settingsState: widget.settingsState,
+      );
+    }else if(widget.gameType == GameType.lookingGlass){
+      _game = LookingGlassGame(
+        mazeLogic: mazeLogic,
+        colorPalette: widget.colorPalette,
+        hapticEngine: widget.hapticEngine,
+        audioPlayer: widget.audioPlayer,
+        exitGameCallback: _triggerExit,
+        settingsState: widget.settingsState,
+      );
+
+    }else{
+      _game = StandardGame(
+        mazeLogic: mazeLogic,
+        colorPalette: widget.colorPalette,
+        hapticEngine: widget.hapticEngine,
+        audioPlayer: widget.audioPlayer,
+        exitGameCallback: _triggerExit,
+        settingsState: widget.settingsState,
+      );
+    }
+  }
+
+  void nextLevel(){
+    _levelNumber++;
+  }
 
   @override
   void initState(){
+
     super.initState();
 
     initializeMazeLogic();
@@ -99,68 +167,6 @@ class _LevelPageState extends State<LevelPage> with SingleTickerProviderStateMix
       ),
     );
 
-    if (widget.sectionLogic.isNextLevel(widget.levelIndex)){
-      _nextLevelCallback = (){
-        widget.hapticEngine.selection();
-        Navigator.pushReplacement(context,
-          MaterialPageRoute(builder: (context) => LevelPage(
-              levelIndex: widget.levelIndex + 1,
-              sectionLogic: widget.sectionLogic,
-              audioPlayer: widget.audioPlayer,
-              settingsState: widget.settingsState,
-              hapticEngine: widget.hapticEngine,
-              gameState: widget.gameState,
-              colorPalette: widget.colorPalette,
-              storageService: widget.storageService,
-            )
-          )
-        );
-      };
-    }else{
-      _nextLevelCallback = null;
-    }
-
-
-
-
-  }
-
-  void initializeMazeLogic(){
-    mazeLogic = widget.sectionLogic.levels[widget.levelIndex];
-  }
-
-  void initializeGameObject(){
-    // print("Game Type: ${widget.sectionLogic.gameType}");
-    if (widget.sectionLogic.gameType == GameType.blackBox){
-      _game = BlackBoxGame(
-        mazeLogic: mazeLogic,
-        colorPalette: widget.colorPalette,
-        hapticEngine: widget.hapticEngine,
-        audioPlayer: widget.audioPlayer,
-        exitGameCallback: _triggerExit,
-        settingsState: widget.settingsState,
-      );
-    }else if(widget.sectionLogic.gameType == GameType.lookingGlass){
-
-      _game = LookingGlassGame(
-        mazeLogic: mazeLogic,
-        colorPalette: widget.colorPalette,
-        hapticEngine: widget.hapticEngine,
-        audioPlayer: widget.audioPlayer,
-        exitGameCallback: _triggerExit,
-        settingsState: widget.settingsState,
-      );
-
-    }else{
-      _game = StandardGame(
-        mazeLogic: mazeLogic,
-        colorPalette: widget.colorPalette,
-        hapticEngine: widget.hapticEngine,
-        audioPlayer: widget.audioPlayer,
-        exitGameCallback: _triggerExit,
-        settingsState: widget.settingsState,
-      );
-    }
   }
 
   @override
@@ -183,6 +189,7 @@ class _LevelPageState extends State<LevelPage> with SingleTickerProviderStateMix
     final int minutes = (time / 60000).floor();
     final int seconds = ((time % 60000) / 1000).floor();
     final int milliseconds = ((time % 1000)/10).floor();
+
     _levelCompletionTime = "${minutes.toString().padLeft(2, "0")}:${
         seconds.toString().padLeft(2,"0")}:${
         milliseconds.toString().padLeft(2,"0")}";
@@ -194,19 +201,6 @@ class _LevelPageState extends State<LevelPage> with SingleTickerProviderStateMix
     _controller.forward();
     print("Updated Rating: $rating");
     setState(() {});
-
-
-    /* Update Level State In Game Logic */
-    widget.gameState.setLevelState(
-      sectionLogic: widget.sectionLogic,
-      levelIndex: widget.levelIndex,
-      levelState: LevelState(
-        state: LevelStateEnum.completed,
-        rating: rating,
-        completionTime: completionTime,
-      ),
-    );
-
 
   }
 
@@ -231,22 +225,6 @@ class _LevelPageState extends State<LevelPage> with SingleTickerProviderStateMix
 
   }
 
-  void _replayLevel(){
-    widget.hapticEngine.selection();
-    Navigator.pushReplacement(context,
-      MaterialPageRoute(builder: (context) => LevelPage(
-          levelIndex: widget.levelIndex,
-          sectionLogic: widget.sectionLogic,
-          hapticEngine: widget.hapticEngine,
-          audioPlayer: widget.audioPlayer,
-          gameState: widget.gameState,
-          colorPalette: widget.colorPalette,
-          settingsState: widget.settingsState,
-          storageService: widget.storageService,
-        )
-      )
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -265,7 +243,7 @@ class _LevelPageState extends State<LevelPage> with SingleTickerProviderStateMix
                 SizedBox(height: 20),
                 FittedBox(
                   child: Text(
-                      widget.sectionLogic.sectionName,
+                      "Unlimited",
                       style: TextStyle(
                         fontFamily: 'Advent',
                         color: widget.colorPalette.activeElementText,
@@ -276,7 +254,7 @@ class _LevelPageState extends State<LevelPage> with SingleTickerProviderStateMix
                   ),
                 ),
                 Text(
-                    "Level ${widget.levelIndex + 1}",
+                    "Level $_levelNumber",
                     style: TextStyle(
                       fontFamily: 'Advent',
                       color: widget.colorPalette.activeElementText,
@@ -331,15 +309,13 @@ class _LevelPageState extends State<LevelPage> with SingleTickerProviderStateMix
                       colorPalette: widget.colorPalette,
                       completionTime: _levelCompletionTime,
                       rating: _levelRating,
-                      replayLevelCallback: _replayLevel,
                       exitLevelCallback: _exitLevelPage,
-                      nextLevelCallback: _nextLevelCallback,
+                      nextLevelCallback: nextLevel,
                     ),
                   )
                 );
               },
               // child:
-
             ),
            if (_levelComplete == false)
            GameWidget( game: _game ),

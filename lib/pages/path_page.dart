@@ -102,7 +102,7 @@ class _PathPageState extends State<PathPage> {
         isDarkMode: widget.settingsState.isDarkMode,
       ),
       child: Padding(
-        padding: const EdgeInsets.all(20.0),
+        padding: const EdgeInsets.only(left: 20.0, right: 20.0, top: 20.0),
         child: SingleChildScrollView(
           physics: BouncingScrollPhysics(),
           child: Padding(
@@ -112,7 +112,12 @@ class _PathPageState extends State<PathPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   UnlimitedCard(
+                    gameType: widget.pathwayLogic.gameType,
                     colorPalette: widget.colorPalette,
+                    hapticEngine: widget.hapticEngine,
+                    storageService: widget.storageService,
+                    settingsState: widget.settingsState,
+                    audioPlayer: widget.audioPlayer,
                   )
                 ] + _unlockedSections(),
             ),
