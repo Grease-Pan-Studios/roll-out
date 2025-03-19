@@ -1,4 +1,4 @@
-![Feature Graphics](graphics/0-feature-graphics.png)
+![Feature Graphics](graphics/0-feature-graphic.png)
 # Roll Out
 
 **Roll Out** is a physics-based maze game where the objective is to roll a ball out of the maze by tilting your phone. The game is developed using Flutter, incorporating the Flame and Forge2D physics engines.
