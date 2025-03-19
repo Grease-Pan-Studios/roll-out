@@ -13,12 +13,14 @@
 
 Samples taken from live app testing
 
-![Feature](graphics/1-feature.png)
-![Levels](graphics/2-levels.png)
-![Dark Mode](graphics/3-dark-mode.png)
-![Game Play](graphics/4-gameplay.png)
-![Looking Glass](graphics/5-looking-glass.png)
-![Lights Outs](graphics/6-lights-out.png)
+<div style="display: flex; flex-wrap: wrap; justify-content: space-around;">
+    <img src="graphics/1-feature.png" alt="Feature" style="width: 30%; margin: 5px;">
+    <img src="graphics/2-levels.png" alt="Levels" style="width: 30%; margin: 5px;">
+    <img src="graphics/3-dark-mode.png" alt="Dark Mode" style="width: 30%; margin: 5px;">
+    <img src="graphics/4-gameplay.png" alt="Game Play" style="width: 30%; margin: 5px;">
+    <img src="graphics/5-looking-glass.png" alt="Looking Glass" style="width: 30%; margin: 5px;">
+    <img src="graphics/6-lights-out.png" alt="Lights Outs" style="width: 30%; margin: 5px;">
+</div>
 
 ## Roadmap
 
