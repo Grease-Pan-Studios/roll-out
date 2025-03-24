@@ -1,5 +1,6 @@
 
 /* Flutter Libraries */
+import 'package:amaze_game/metadata/project_config.dart';
 import 'package:amaze_game/services/audio_player_service.dart';
 import 'package:amaze_game/services/haptic_engine_service.dart';
 import 'package:amaze_game/states/settings_state.dart';
@@ -50,8 +51,6 @@ class _PathPickerPageState extends State<PathPickerPage> {
 
   late List<Widget> _paths;
 
-  final bool unlockAllPaths = true;
-
   final GlobalKey<IndicatorTagState> indicatorKey = GlobalKey<IndicatorTagState>();
 
   void _onPageChanged(int index) {
@@ -86,7 +85,7 @@ class _PathPickerPageState extends State<PathPickerPage> {
           )
       );
 
-      if (!unlockAllPaths && !widget.gameState.isPageCompleted(
+      if (!Config.unlockAllPaths && !widget.gameState.isPageCompleted(
           pageLogic: widget.gameLogic.pages[i])){
         break;
       }

@@ -25,7 +25,7 @@ class StandardMaze extends PositionComponent with HasGameRef{
   ColorPaletteLogic colorPalette;
   HapticEngineService hapticEngine;
   AudioPlayerService audioPlayer;
-  void Function() levelCompletionCallback;
+  void Function({required bool isComplete}) levelCompletionCallback;
 
 
   late BallComponent ballComponent;
@@ -150,7 +150,7 @@ class StandardMaze extends PositionComponent with HasGameRef{
     ballComponent.setSizeGoal(0.1);
 
     // Future.delayed(Duration(seconds: 1), () {
-      levelCompletionCallback();
+      levelCompletionCallback(isComplete: true);
     // });
 
 

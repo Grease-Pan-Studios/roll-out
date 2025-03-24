@@ -69,13 +69,38 @@ class _LevelPageState extends State<UnlimitedPage> with SingleTickerProviderStat
   late LevelCompletionCard levelCompletionCard;
   late StandardGame _game;
 
+
+  void showCompletionCard(int rating, Duration completionTime){
+
+    /* Calculating Time */
+    final int time = completionTime.inMilliseconds;
+    final int minutes = (time / 60000).floor();
+    final int seconds = ((time % 60000) / 1000).floor();
+    final int milliseconds = ((time % 1000)/10).floor();
+
+    _levelCompletionTime = "${minutes.toString().padLeft(2, "0")}:${
+        seconds.toString().padLeft(2,"0")}:${
+        milliseconds.toString().padLeft(2,"0")}";
+
+    _levelRating = rating;
+
+    _controller.forward();
+    setState(() {});
+
+  }
+
+  void hideCompletionCard(){
+    _controller.reverse();
+    setState(() {});
+  }
+
   void initializeMazeLogic(){
 
     /* Need to determine size */
     final double levelNumber = _levelNumber.toDouble();
-    double heightHeuristic = max(4, pow(0.5 * levelNumber, 0.5).toDouble());
+    double widthHeuristic = max(4, pow(2 * levelNumber, 0.5).toDouble() + 3);
 
-    double widthHeuristic = max(heightHeuristic * widget.screenRatio, 4);
+    double heightHeuristic = max(widthHeuristic * widget.screenRatio, 4);
 
     int sizeX = widthHeuristic.floor();
     int sizeY = heightHeuristic.floor();
@@ -86,18 +111,18 @@ class _LevelPageState extends State<UnlimitedPage> with SingleTickerProviderStat
     /* TODO Need to determine ball restitution 0.5 to 0.9 */
 
     /* TODO Need to determine star thresholds */
-
     mazeLogic = MazeGenerator.getMaze(
       sizeX, sizeY,
       ballRestitution: 0.5,
-      threeStarThreshold: Duration(seconds: 30),
-      twoStarThreshold: Duration(seconds: 60),
-      oneStarThreshold: Duration(seconds: 90),
+      threeStarThreshold: Duration(seconds: 15),
+      twoStarThreshold: Duration(seconds: 30),
+      oneStarThreshold: Duration(seconds: 60),
     );
 
   }
 
   void initializeGameObject(){
+
     if (widget.gameType == GameType.blackBox){
       _game = BlackBoxGame(
         mazeLogic: mazeLogic,
@@ -131,6 +156,11 @@ class _LevelPageState extends State<UnlimitedPage> with SingleTickerProviderStat
 
   void nextLevel(){
     _levelNumber++;
+    initializeMazeLogic();
+    initializeGameObject();
+    hideCompletionCard();
+    _levelComplete = false;
+    setState(() {});
   }
 
   @override
@@ -184,23 +214,9 @@ class _LevelPageState extends State<UnlimitedPage> with SingleTickerProviderStat
     //TODO: trigger for non-completion is incomplete
     assert(isComplete == true, "Functionality for non-completion is incomplete.");
 
-    /* Calculating Time */
-    final int time = completionTime.inMilliseconds;
-    final int minutes = (time / 60000).floor();
-    final int seconds = ((time % 60000) / 1000).floor();
-    final int milliseconds = ((time % 1000)/10).floor();
-
-    _levelCompletionTime = "${minutes.toString().padLeft(2, "0")}:${
-        seconds.toString().padLeft(2,"0")}:${
-        milliseconds.toString().padLeft(2,"0")}";
-
     _levelComplete = true;
 
-    _levelRating = rating;
-
-    _controller.forward();
-    print("Updated Rating: $rating");
-    setState(() {});
+    showCompletionCard(rating, completionTime);
 
   }
 

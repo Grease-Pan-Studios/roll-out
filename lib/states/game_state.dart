@@ -1,4 +1,5 @@
 
+import 'package:amaze_game/metadata/project_config.dart';
 import 'package:amaze_game/services/storage_service.dart';
 import 'package:flutter/material.dart';
 
@@ -17,7 +18,7 @@ class GameState{
     required this.storageService
   });
 
-  final bool unlockAllLevels = true;
+
 
   Future<void> initialize() async{
     _levelStates = {};
@@ -120,7 +121,7 @@ class GameState{
     }
 
     /* If no cached state it is either locked or unlocked */
-    if (unlockAllLevels){
+    if (Config.unlockAllLevels){
       return LevelState(state: LevelStateEnum.unlocked);
     }
 

@@ -1,6 +1,7 @@
 
 import 'package:amaze_game/states/game_type_state.dart';
 import 'package:amaze_game/states/settings_state.dart';
+import 'package:amaze_game/ui_components/level_appbar.dart';
 import 'package:flutter/material.dart';
 
 import 'package:amaze_game/pages/unlimited_page.dart';
@@ -12,9 +13,11 @@ import 'package:amaze_game/services/haptic_engine_service.dart';
 
 class UnlimitedCard extends StatelessWidget {
 
+  final double hue;
   final GameType gameType;
 
   final ColorPaletteLogic colorPalette;
+  late ColorPaletteLogic cardPalette;
 
   final SettingsState settingsState;
 
@@ -22,15 +25,21 @@ class UnlimitedCard extends StatelessWidget {
   final AudioPlayerService audioPlayer;
   final HapticEngineService hapticEngine;
 
-  const UnlimitedCard({
+
+  UnlimitedCard({
     super.key,
+    required this.hue,
     required this.gameType,
     required this.audioPlayer,
     required this.colorPalette,
     required this.hapticEngine,
     required this.storageService,
     required this.settingsState,
-  });
+  }){
+    cardPalette = ColorPaletteLogic.fromHue(
+      hue, isDarkMode: settingsState.isDarkMode
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -42,8 +51,9 @@ class UnlimitedCard extends StatelessWidget {
           hapticEngine.selection();
 
           /*Calculate Screen Ratio */
-          double screenRatio = MediaQuery.of(context).size.width
-              / MediaQuery.of(context).size.height;
+          double effectiveHeight = MediaQuery.of(context).size.height
+              - LevelAppBar.appBarHeight - 70;
+          double screenRatio = effectiveHeight / MediaQuery.of(context).size.width;
 
           Navigator.push(
             context,
@@ -59,10 +69,10 @@ class UnlimitedCard extends StatelessWidget {
           );
 
         },
-        color: colorPalette.activeElementBackground,
+        color: cardPalette.activeElementBackground,
         shape: RoundedRectangleBorder(
           side: BorderSide(
-            color: colorPalette.activeElementText,
+            color: cardPalette.activeElementText,
             strokeAlign: BorderSide.strokeAlignInside,
             width: 3,
           ),
@@ -89,7 +99,7 @@ class UnlimitedCard extends StatelessWidget {
                           fontSize: 32,
                           fontWeight: FontWeight.bold,
                           fontFamily: "Advent",
-                          color: colorPalette.activeElementText,
+                          color: cardPalette.activeElementText,
                           letterSpacing: -1.2,
                           height: 1,
                         ),
@@ -97,7 +107,7 @@ class UnlimitedCard extends StatelessWidget {
                       Text.rich(
                         style: TextStyle(
                           fontFamily: "Advent",
-                          color: colorPalette.activeElementText,
+                          color: cardPalette.activeElementText,
                           fontSize: 20,
                           letterSpacing: -1.2,
                           height: 1,
@@ -142,7 +152,7 @@ class UnlimitedCard extends StatelessWidget {
                   icon: ImageIcon(
                     AssetImage("assets/images/ui_elements/trophy.png"),
                     size: 24,
-                    color: colorPalette.activeElementText,
+                    color: cardPalette.activeElementText,
                   )
                 ),
               )

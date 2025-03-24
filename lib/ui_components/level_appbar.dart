@@ -18,6 +18,8 @@ class LevelAppBar extends StatelessWidget {
   final VoidCallback? onSettingsOpen;
   final VoidCallback? onSettingsClose;
 
+  static const double appBarHeight = 120;
+
   const LevelAppBar({
     super.key,
     required this.context,
@@ -51,7 +53,7 @@ class LevelAppBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      toolbarHeight: 120,
+      toolbarHeight: appBarHeight,
       backgroundColor: colorPalette.getDarkPrimary(),
       automaticallyImplyLeading: false,
       centerTitle: true,

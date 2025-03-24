@@ -36,8 +36,8 @@ class Controller {
         double roll = atan2(event.y, event.z) * (180 / pi);
         double pitch = atan2(-event.x, sqrt(event.y * event.y + event.z * event.z)) * (180 / pi);
 
-        double rollRange = minRollRange + settingsState.tiltRange * (maxRollRange - minRollRange);
-        double pitchRange = minPitchRange + settingsState.tiltRange * (maxPitchRange - minPitchRange);
+        double rollRange = minRollRange + (1- settingsState.tiltRange) * (maxRollRange - minRollRange);
+        double pitchRange = minPitchRange + (1- settingsState.tiltRange) * (maxPitchRange - minPitchRange);
 
         double clippedRoll = roll.clamp(-rollRange, rollRange);
         double clippedPitch = pitch.clamp(-pitchRange, pitchRange);

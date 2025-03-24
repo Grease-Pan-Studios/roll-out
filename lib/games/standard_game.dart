@@ -20,6 +20,8 @@ class StandardGame extends Forge2DGame{
   final HapticEngineService hapticEngine;
   final AudioPlayerService audioPlayer;
   final SettingsState settingsState;
+  final bool Function()? levelFailed;
+
   final void Function({
     required bool isComplete,
     required int rating,
@@ -39,12 +41,13 @@ class StandardGame extends Forge2DGame{
     required this.hapticEngine,
     required this.audioPlayer,
     required this.settingsState,
+    this.levelFailed,
   }) : super(
     world: Forge2DWorld(gravity: Vector2(0, 10)),
     zoom: 100
   );
 
-  void triggerGameCompletion(){
+  void triggerGameCompletion({required bool isComplete}){
 
     stopwatch.stop();
     Duration completionTime = Duration(
@@ -62,7 +65,6 @@ class StandardGame extends Forge2DGame{
 
     /*Delay For Animation*/
     Future.delayed(Duration(seconds: 1), (){
-
       exitGameCallback(
         isComplete: true,
         rating: rating,

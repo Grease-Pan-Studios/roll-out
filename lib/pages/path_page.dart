@@ -1,6 +1,7 @@
 
 import 'dart:async';
 
+import 'package:amaze_game/metadata/project_config.dart';
 import 'package:amaze_game/services/audio_player_service.dart';
 import 'package:amaze_game/services/haptic_engine_service.dart';
 import 'package:amaze_game/services/storage_service.dart';
@@ -46,9 +47,6 @@ class PathPage extends StatefulWidget {
 class _PathPageState extends State<PathPage> {
 
 
-  final bool _showAllSection = true;
-
-
   final GlobalKey<IndicatorTagState> indicatorKey = GlobalKey<IndicatorTagState>();
 
   @override
@@ -83,7 +81,7 @@ class _PathPageState extends State<PathPage> {
         )
       );
 
-      if (!_showAllSection && !widget.gameState.isSectionCompleted(
+      if (!Config.unlockAllSections && !widget.gameState.isSectionCompleted(
           sectionLogic: widget.pathwayLogic.sections[i])){
         break;
       }
@@ -112,6 +110,7 @@ class _PathPageState extends State<PathPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   UnlimitedCard(
+                    hue: widget.pathwayLogic.hue,
                     gameType: widget.pathwayLogic.gameType,
                     colorPalette: widget.colorPalette,
                     hapticEngine: widget.hapticEngine,

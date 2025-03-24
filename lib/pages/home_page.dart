@@ -1,5 +1,6 @@
 
 import 'package:amaze_game/logical/game_logic.dart';
+import 'package:amaze_game/metadata/project_config.dart';
 import 'package:amaze_game/services/storage_service.dart';
 import 'package:amaze_game/states/settings_state.dart';
 import 'package:amaze_game/ui_components/settings_card.dart';
@@ -43,7 +44,7 @@ class _HomePageState extends State<HomePage> {
   final PanelController _panelController = PanelController();
   late int _pageBuildCount;
 
-  double _panelSlide = 0.0;
+  double _panelSlide = Config.panelOpen ? 1.0 : 0.0;
 
 
   void _updateHomePage(){
@@ -92,7 +93,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return SlidingUpPanel(
 
-      defaultPanelState: PanelState.OPEN,
+      defaultPanelState: Config.panelOpen ? PanelState.OPEN : PanelState.CLOSED,
 
       onPanelOpened: _onPanelOpen,
 
