@@ -7,6 +7,7 @@ import 'package:amaze_game/input_elements/button.dart';
 
 class LevelCompletionCard extends StatefulWidget {
 
+  final bool isComplete;
   final int rating;
   final String completionTime;
   final ColorPaletteLogic colorPalette;
@@ -16,6 +17,7 @@ class LevelCompletionCard extends StatefulWidget {
 
   LevelCompletionCard({
     super.key,
+    required this.isComplete,
     required this.rating,
     required this.completionTime,
     required this.colorPalette,
@@ -70,6 +72,12 @@ class _LevelCompletionCardState extends State<LevelCompletionCard> with SingleTi
   }
 
   void updateComment(){
+
+    if (!widget.isComplete){
+      comment = "Time's Up!";
+      return;
+    }
+
     if (widget.rating == 0){
       comment = "Good Try!";
     }
@@ -83,7 +91,6 @@ class _LevelCompletionCardState extends State<LevelCompletionCard> with SingleTi
       comment = "Excellent!";
     }
   }
-
 
   @override
   void didUpdateWidget(covariant LevelCompletionCard oldWidget) {
@@ -118,82 +125,89 @@ class _LevelCompletionCardState extends State<LevelCompletionCard> with SingleTi
 
             /* Title */
             Text(
-              "Level Complete",
+              widget.isComplete ? "Level Complete" : "Level Failed",
               style: TextStyle(
                 fontFamily: 'Advent',
                 color: widget.colorPalette.activeElementText,
                 fontSize: 36,
-                fontWeight: FontWeight.w600,
+                fontWeight: FontWeight.w700,
                 letterSpacing: -1.08,
               )
             ),
 
             Column(
               children: [
-                const SizedBox(height: 15),
-                Text(
-                  widget.completionTime,
-                  style: TextStyle(
-                    fontFamily: 'JetBrainsMono',
-                    color: widget.colorPalette.activeElementText,
-                    fontSize: 48,
-                    fontWeight: FontWeight.w700,
-                    letterSpacing: -6.2,
-                  )
-                ),
-                const SizedBox(height: 15),
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.center,
 
-                  children: [
-                    AnimatedCrossFade(
-                      duration: const Duration(milliseconds: 500), // Animation duration
-                      firstChild: ImageIcon(
+                if ( widget.isComplete )
+                Padding(
+                  padding: const EdgeInsets.only(top: 15.0),
+                  child: Text(
+                    widget.completionTime,
+                    style: TextStyle(
+                      fontFamily: 'JetBrainsMono',
+                      color: widget.colorPalette.activeElementText,
+                      fontSize: 48,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: -6.2,
+                    )
+                  ),
+                ),
+
+                if ( widget.isComplete )
+                Padding(
+                  padding: const EdgeInsets.only(top: 15.0),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.center,
+
+                    children: [
+                      AnimatedCrossFade(
+                        duration: const Duration(milliseconds: 500), // Animation duration
+                        firstChild: ImageIcon(
+                            AssetImage('assets/images/ui_elements/star_outline.png'),
+                            size: 50,
+                            color: widget.colorPalette.activeElementText,
+                        ),
+                        secondChild: ImageIcon(
+                          AssetImage('assets/images/ui_elements/star_fill.png'),
+                          size: 50,
+                          color: widget.colorPalette.activeElementText,
+                        ), // Second image
+                        crossFadeState: starState[0] ? CrossFadeState.showSecond: CrossFadeState.showFirst,
+                      ),
+                      AnimatedCrossFade(
+                        duration: const Duration(milliseconds: 500), // Animation duration
+                        firstChild: ImageIcon(
                           AssetImage('assets/images/ui_elements/star_outline.png'),
                           size: 50,
                           color: widget.colorPalette.activeElementText,
+                        ),
+                        secondChild: ImageIcon(
+                          AssetImage('assets/images/ui_elements/star_fill.png'),
+                          size: 50,
+                          color: widget.colorPalette.activeElementText,
+                        ), // Second image
+                        crossFadeState: starState[1] ? CrossFadeState.showSecond: CrossFadeState.showFirst,
                       ),
-                      secondChild: ImageIcon(
-                        AssetImage('assets/images/ui_elements/star_fill.png'),
-                        size: 50,
-                        color: widget.colorPalette.activeElementText,
-                      ), // Second image
-                      crossFadeState: starState[0] ? CrossFadeState.showSecond: CrossFadeState.showFirst,
-                    ),
-                    AnimatedCrossFade(
-                      duration: const Duration(milliseconds: 500), // Animation duration
-                      firstChild: ImageIcon(
-                        AssetImage('assets/images/ui_elements/star_outline.png'),
-                        size: 50,
-                        color: widget.colorPalette.activeElementText,
+                      AnimatedCrossFade(
+                        duration: const Duration(milliseconds: 500), // Animation duration
+                        firstChild: ImageIcon(
+                          AssetImage('assets/images/ui_elements/star_outline.png'),
+                          size: 50,
+                          color: widget.colorPalette.activeElementText,
+                        ),
+                        secondChild: ImageIcon(
+                          AssetImage('assets/images/ui_elements/star_fill.png'),
+                          size: 50,
+                          color: widget.colorPalette.activeElementText,
+                        ), // Second image
+                        crossFadeState: starState[2] ? CrossFadeState.showSecond: CrossFadeState.showFirst,
                       ),
-                      secondChild: ImageIcon(
-                        AssetImage('assets/images/ui_elements/star_fill.png'),
-                        size: 50,
-                        color: widget.colorPalette.activeElementText,
-                      ), // Second image
-                      crossFadeState: starState[1] ? CrossFadeState.showSecond: CrossFadeState.showFirst,
-                    ),
-                    AnimatedCrossFade(
-                      duration: const Duration(milliseconds: 500), // Animation duration
-                      firstChild: ImageIcon(
-                        AssetImage('assets/images/ui_elements/star_outline.png'),
-                        size: 50,
-                        color: widget.colorPalette.activeElementText,
-                      ),
-                      secondChild: ImageIcon(
-                        AssetImage('assets/images/ui_elements/star_fill.png'),
-                        size: 50,
-                        color: widget.colorPalette.activeElementText,
-                      ), // Second image
-                      crossFadeState: starState[2] ? CrossFadeState.showSecond: CrossFadeState.showFirst,
-                    ),
 
-                  ],
+                    ],
 
+                  ),
                 ),
-
 
                 Text(
                   comment,
@@ -206,22 +220,24 @@ class _LevelCompletionCardState extends State<LevelCompletionCard> with SingleTi
                   )
                 ),
 
-                const SizedBox(height: 30),
-
-                widget.replayLevelCallback == null ? Button(
-                  colorPalette: widget.colorPalette,
-                  text: "Exit",
-                  onPressed: widget.exitLevelCallback,
-                  isDark: false,
-                ) :
-                Button(
-                  colorPalette: widget.colorPalette,
-                  text: "Once Again?",
-                  onPressed: widget.replayLevelCallback!,
-                  isDark: false,
+                Padding(
+                  padding: const EdgeInsets.only(top: 15),
+                  child: widget.replayLevelCallback == null ? Button(
+                    colorPalette: widget.colorPalette,
+                    text: "Exit",
+                    onPressed: widget.exitLevelCallback,
+                    isDark: false,
+                  ) :
+                  Button(
+                    colorPalette: widget.colorPalette,
+                    text: "Once Again?",
+                    onPressed: widget.replayLevelCallback!,
+                    isDark: false,
+                  ),
                 ),
 
-                widget.nextLevelCallback != null ? Button(
+                (widget.nextLevelCallback != null && widget.isComplete) ?
+                Button(
                     colorPalette: widget.colorPalette,
                     text: "Next Level",
                     onPressed: widget.nextLevelCallback!,

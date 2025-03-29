@@ -71,6 +71,9 @@ class StandardMaze extends PositionComponent with HasGameRef{
     if (!mazeComplete && dist < mazeLogic.cellSize * 0.3){
       gameCompleteTrigger();
     }
+
+    // if ()
+
   }
 
 
@@ -140,7 +143,11 @@ class StandardMaze extends PositionComponent with HasGameRef{
 
   }
 
-
+  // void gameFailTrigger(){
+  //   print("Game Failed");
+  //   levelCompletionCallback(isComplete: false);
+  // }
+  //
   void gameCompleteTrigger(){
     // print("Goal Reached");
     mazeComplete = true;
@@ -152,9 +159,8 @@ class StandardMaze extends PositionComponent with HasGameRef{
     // Future.delayed(Duration(seconds: 1), () {
       levelCompletionCallback(isComplete: true);
     // });
-
-
   }
+
 
   void drawBackground(Canvas canvas){
     double padding = mazeLogic.cellSize / 4;

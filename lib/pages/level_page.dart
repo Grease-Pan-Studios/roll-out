@@ -52,7 +52,7 @@ class LevelPage extends StatefulWidget {
 
 class _LevelPageState extends State<LevelPage> with SingleTickerProviderStateMixin{
 
-
+  bool _removeGameObject = false;
   bool _levelComplete = false;
   int _levelRating = 0;
   String _levelCompletionTime = "00:00:00";
@@ -175,38 +175,45 @@ class _LevelPageState extends State<LevelPage> with SingleTickerProviderStateMix
     required Duration completionTime,
   }){
 
-    //TODO: trigger for non-completion is incomplete
-    assert(isComplete == true, "Functionality for non-completion is incomplete.");
+    // TODO: trigger for non-completion is incomplete
+    // assert(isComplete == true, "Functionality for non-completion is incomplete.");
 
     /* Calculating Time */
     final int time = completionTime.inMilliseconds;
     final int minutes = (time / 60000).floor();
     final int seconds = ((time % 60000) / 1000).floor();
     final int milliseconds = ((time % 1000)/10).floor();
+
     _levelCompletionTime = "${minutes.toString().padLeft(2, "0")}:${
         seconds.toString().padLeft(2,"0")}:${
         milliseconds.toString().padLeft(2,"0")}";
 
-    _levelComplete = true;
+    _levelComplete = isComplete;
 
     _levelRating = rating;
 
+    _removeGameObject = true;
+    if (isComplete){
+      /* Update Level State In Game Logic */
+      widget.gameState.setLevelState(
+        sectionLogic: widget.sectionLogic,
+        levelIndex: widget.levelIndex,
+        levelState: LevelState(
+          state: LevelStateEnum.completed,
+          rating: rating,
+          completionTime: completionTime,
+        ),
+      );
+
+    }else{
+      _levelRating = 0;
+    }
+
+
     _controller.forward();
     print("Updated Rating: $rating");
+
     setState(() {});
-
-
-    /* Update Level State In Game Logic */
-    widget.gameState.setLevelState(
-      sectionLogic: widget.sectionLogic,
-      levelIndex: widget.levelIndex,
-      levelState: LevelState(
-        state: LevelStateEnum.completed,
-        rating: rating,
-        completionTime: completionTime,
-      ),
-    );
-
 
   }
 
@@ -328,6 +335,7 @@ class _LevelPageState extends State<LevelPage> with SingleTickerProviderStateMix
                   child: Opacity(
                     opacity: _opacityAnimation.value,
                     child: LevelCompletionCard(
+                      isComplete: _levelComplete,
                       colorPalette: widget.colorPalette,
                       completionTime: _levelCompletionTime,
                       rating: _levelRating,
@@ -341,7 +349,7 @@ class _LevelPageState extends State<LevelPage> with SingleTickerProviderStateMix
               // child:
 
             ),
-           if (_levelComplete == false)
+           if (!_removeGameObject)
            GameWidget( game: _game ),
 
           ],

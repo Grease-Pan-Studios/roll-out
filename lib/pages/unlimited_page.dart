@@ -322,6 +322,7 @@ class _LevelPageState extends State<UnlimitedPage> with SingleTickerProviderStat
                   child: Opacity(
                     opacity: _opacityAnimation.value,
                     child: LevelCompletionCard(
+                      isComplete: _levelComplete,
                       colorPalette: widget.colorPalette,
                       completionTime: _levelCompletionTime,
                       rating: _levelRating,

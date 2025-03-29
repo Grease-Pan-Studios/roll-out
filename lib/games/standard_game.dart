@@ -20,8 +20,6 @@ class StandardGame extends Forge2DGame{
   final HapticEngineService hapticEngine;
   final AudioPlayerService audioPlayer;
   final SettingsState settingsState;
-  final bool Function()? levelFailed;
-
   final void Function({
     required bool isComplete,
     required int rating,
@@ -41,7 +39,6 @@ class StandardGame extends Forge2DGame{
     required this.hapticEngine,
     required this.audioPlayer,
     required this.settingsState,
-    this.levelFailed,
   }) : super(
     world: Forge2DWorld(gravity: Vector2(0, 10)),
     zoom: 100
@@ -62,11 +59,10 @@ class StandardGame extends Forge2DGame{
     } else if (completionTime.inMilliseconds < mazeLogic.oneStarThreshold.inMilliseconds){
       rating = 1;
     }
-
     /*Delay For Animation*/
     Future.delayed(Duration(seconds: 1), (){
       exitGameCallback(
-        isComplete: true,
+        isComplete: isComplete,
         rating: rating,
         completionTime: completionTime
       );
@@ -132,6 +128,17 @@ class StandardGame extends Forge2DGame{
 
   }
 
+  void gameFailedTrigger(){
+    // if stopwatch takes mroe than 1 minute
+    // then the game is failed
+    if (stopwatch.elapsed.inSeconds > 10){
+      exitGameCallback(
+        isComplete: false,
+        rating: 0,
+        completionTime: stopwatch.elapsed
+      );
+    }
+  }
 
   void adjustCamera({required StandardMaze reference}){
     double padding = reference.mazeLogic.cellSize / 2;
@@ -162,7 +169,7 @@ class StandardGame extends Forge2DGame{
   void update(double dt) {
     super.update(dt);
     timeText.text = getTime();
-    // timeText.position = Vector2(size.x/2, 0);
+    gameFailedTrigger();
   }
 
 
