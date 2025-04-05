@@ -8,6 +8,7 @@ import 'package:amaze_game/input_elements/button.dart';
 class LevelCompletionCard extends StatefulWidget {
 
   final bool isComplete;
+  final bool randomFlag;
   final int rating;
   final String completionTime;
   final ColorPaletteLogic colorPalette;
@@ -22,6 +23,7 @@ class LevelCompletionCard extends StatefulWidget {
     required this.completionTime,
     required this.colorPalette,
     required this.exitLevelCallback,
+    this.randomFlag = false,
     this.replayLevelCallback,
     this.nextLevelCallback,
   }){
@@ -222,7 +224,7 @@ class _LevelCompletionCardState extends State<LevelCompletionCard> with SingleTi
 
                 Padding(
                   padding: const EdgeInsets.only(top: 15),
-                  child: widget.replayLevelCallback == null ? Button(
+                  child: (widget.replayLevelCallback == null || widget.randomFlag) ? Button(
                     colorPalette: widget.colorPalette,
                     text: "Exit",
                     onPressed: widget.exitLevelCallback,
@@ -248,8 +250,6 @@ class _LevelCompletionCardState extends State<LevelCompletionCard> with SingleTi
                   onPressed: widget.exitLevelCallback,
                   isDark: true,
                 )
-
-
               ],
             )
 

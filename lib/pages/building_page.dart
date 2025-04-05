@@ -95,7 +95,10 @@ class _BuildingPageState extends State<BuildingPage> {
       seed: seedUsed,
     );
     mazeLogic.adjustStartAndGoal();
-    mazeLogic.estimateTimeThreshold(gameType);
+    mazeLogic.estimateTimeThreshold(
+        gameType: gameType,
+        difficulty: 0.2,
+    );
 
   }
 
@@ -121,7 +124,10 @@ class _BuildingPageState extends State<BuildingPage> {
     final Map<String, dynamic> levelMap = json.decode(levelString);
     mazeLogic = MazeLogic.fromJson(levelMap);
 
-    mazeLogic.estimateTimeThreshold(gameType);
+    mazeLogic.estimateTimeThreshold(
+      gameType: gameType,
+      difficulty: 0.2,
+    );
 
 
     _buildGame();
@@ -200,7 +206,6 @@ class _BuildingPageState extends State<BuildingPage> {
                 },
               ),
   * */
-
 
   @override
   Widget build(BuildContext context) {

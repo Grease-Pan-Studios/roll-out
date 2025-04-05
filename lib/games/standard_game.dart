@@ -1,4 +1,6 @@
 
+import 'dart:math';
+
 import 'package:amaze_game/controls/controller.dart';
 import 'package:amaze_game/logical/color_palette_logic.dart';
 import 'package:amaze_game/logical/maze_logic.dart';
@@ -106,7 +108,7 @@ class StandardGame extends Forge2DGame{
     add(timeText);
 
     adjustCamera(reference: maze);
-
+    print("Call Again");
     stopwatch = Stopwatch();
     stopwatch.start();
 
@@ -128,10 +130,11 @@ class StandardGame extends Forge2DGame{
 
   }
 
-  void gameFailedTrigger(){
-    // if stopwatch takes mroe than 1 minute
-    // then the game is failed
-    if (stopwatch.elapsed.inSeconds > 10){
+  void gameFailedTrigger({bool force = false}){
+
+    if (force || mazeLogic.hasTimeLimit
+        && stopwatch.elapsed.inSeconds
+            > mazeLogic.oneStarThreshold.inSeconds){
       exitGameCallback(
         isComplete: false,
         rating: 0,
@@ -143,23 +146,55 @@ class StandardGame extends Forge2DGame{
   void adjustCamera({required StandardMaze reference}){
     double padding = reference.mazeLogic.cellSize / 2;
     // print("Height of text: ${timeText.height}");
+
     final mazeSize = reference.size;
     final cameraSize = size;
 
-    final scaleX = cameraSize.x / (mazeSize.x + 2 * padding);
-    final scaleY = cameraSize.y / (mazeSize.y + 2* padding + (timeText.height / camera.viewfinder.zoom));
-    camera.viewfinder.zoom = scaleX > scaleY ? scaleY : scaleX;
+    for (int iteration = 0; iteration < 10; iteration++){
 
-    camera.moveTo(reference.position + Vector2(mazeSize.x/2, mazeSize.y/2));
+      final scaleX = cameraSize.x / (mazeSize.x + 2 * padding);
+      // print("Time Text Height: ${timeText.height}");
+      final scaleY = cameraSize.y / (mazeSize.y + 2* padding + (timeText.height / camera.viewfinder.zoom));
+
+      // print("ScaleX: $scaleX, ScaleY: $scaleY");
+
+      if (scaleX > scaleY){
+        camera.viewfinder.zoom = scaleY;
+        // camera.moveTo(reference.position + Vector2(mazeSize.x/2, mazeSize.y/2) - Vector2(0, timeText.height * 0.4 / camera.viewfinder.zoom));
+        camera.moveTo(reference.position + Vector2(mazeSize.x/2, mazeSize.y/2) - Vector2(0, timeText.height * 0.4 / camera.viewfinder.zoom));
+
+      } else {
+        camera.viewfinder.zoom = scaleX;
+        camera.moveTo(reference.position + Vector2(mazeSize.x/2, mazeSize.y/2));
+      }
+
+    }
+
+
+
+
 
   }
 
   String getTime(){
     /*Minutes 00: Seconds 00: Milliseconds 00*/
-    final time = stopwatch.elapsedMilliseconds;
-    final minutes = (time / 60000).floor();
-    final seconds = ((time % 60000) / 1000).floor();
-    final milliseconds = ((time % 1000)/10).floor();
+    int time = stopwatch.elapsedMilliseconds;
+
+    if (mazeLogic.hasTimeLimit){
+      final int totalTime = mazeLogic.oneStarThreshold.inMilliseconds;
+      time = totalTime - time;
+      if (time < 0){
+        time = 0;
+        gameFailedTrigger(force: true);
+      }
+
+    }
+
+
+    final int minutes = (time / 60000).floor();
+    final int seconds = ((time % 60000) / 1000).floor();
+    final int milliseconds = ((time % 1000)/10).floor();
+
     return "${minutes.toString().padLeft(2, "0")}:${
         seconds.toString().padLeft(2,"0")}:${
         milliseconds.toString().padLeft(2,"0")}";

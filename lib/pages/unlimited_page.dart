@@ -11,7 +11,6 @@ import 'package:amaze_game/services/audio_player_service.dart';
 import 'package:amaze_game/services/storage_service.dart';
 
 import 'package:amaze_game/states/game_state.dart';
-import 'package:amaze_game/states/level_state.dart';
 import 'package:amaze_game/states/settings_state.dart';
 import 'package:amaze_game/states/game_type_state.dart';
 
@@ -33,6 +32,7 @@ class UnlimitedPage extends StatefulWidget {
   final AudioPlayerService audioPlayer;
   final ColorPaletteLogic colorPalette;
 
+  final GameState gameState;
   final SettingsState settingsState;
   final StorageService storageService;
 
@@ -41,6 +41,7 @@ class UnlimitedPage extends StatefulWidget {
   const UnlimitedPage({
     super.key,
     required this.gameType,
+    required this.gameState,
     required this.screenRatio,
     required this.colorPalette,
     required this.audioPlayer,
@@ -55,7 +56,8 @@ class UnlimitedPage extends StatefulWidget {
 
 class _LevelPageState extends State<UnlimitedPage> with SingleTickerProviderStateMixin{
 
-
+  bool _randomFlag = true;
+  bool _removeGameObject = false;
   bool _levelComplete = false;
   int _levelRating = 0;
   String _levelCompletionTime = "00:00:00";
@@ -68,26 +70,6 @@ class _LevelPageState extends State<UnlimitedPage> with SingleTickerProviderStat
   late Animation<double> _opacityAnimation;
   late LevelCompletionCard levelCompletionCard;
   late StandardGame _game;
-
-
-  void showCompletionCard(int rating, Duration completionTime){
-
-    /* Calculating Time */
-    final int time = completionTime.inMilliseconds;
-    final int minutes = (time / 60000).floor();
-    final int seconds = ((time % 60000) / 1000).floor();
-    final int milliseconds = ((time % 1000)/10).floor();
-
-    _levelCompletionTime = "${minutes.toString().padLeft(2, "0")}:${
-        seconds.toString().padLeft(2,"0")}:${
-        milliseconds.toString().padLeft(2,"0")}";
-
-    _levelRating = rating;
-
-    _controller.forward();
-    setState(() {});
-
-  }
 
   void hideCompletionCard(){
     _controller.reverse();
@@ -105,19 +87,30 @@ class _LevelPageState extends State<UnlimitedPage> with SingleTickerProviderStat
     int sizeX = widthHeuristic.floor();
     int sizeY = heightHeuristic.floor();
 
+    /* Difficulty 0 to 1 */
+    double difficulty = pow(2*levelNumber, 0.5).toDouble() % 1.0;
 
-    /* TODO Need to determine difficulty 0 to 1 */
+    double minBallRestitution = 0.5;
+    double maxBallRestitution = 0.8;
+    double ballRestitution = minBallRestitution
+        + (maxBallRestitution - minBallRestitution) * difficulty;
 
-    /* TODO Need to determine ball restitution 0.5 to 0.9 */
-
-    /* TODO Need to determine star thresholds */
     mazeLogic = MazeGenerator.getMaze(
       sizeX, sizeY,
-      ballRestitution: 0.5,
+      hasTimeLimit: true,
+      ballRestitution: ballRestitution,
       threeStarThreshold: Duration(seconds: 15),
       twoStarThreshold: Duration(seconds: 30),
       oneStarThreshold: Duration(seconds: 60),
     );
+
+    mazeLogic.adjustStartAndGoal();
+
+    mazeLogic.estimateTimeThreshold(
+      gameType: widget.gameType,
+      difficulty: difficulty,
+    );
+
 
   }
 
@@ -155,11 +148,14 @@ class _LevelPageState extends State<UnlimitedPage> with SingleTickerProviderStat
   }
 
   void nextLevel(){
+
     _levelNumber++;
+
     initializeMazeLogic();
     initializeGameObject();
     hideCompletionCard();
     _levelComplete = false;
+    _removeGameObject = false;
     setState(() {});
   }
 
@@ -211,12 +207,33 @@ class _LevelPageState extends State<UnlimitedPage> with SingleTickerProviderStat
     required Duration completionTime,
   }){
 
-    //TODO: trigger for non-completion is incomplete
-    assert(isComplete == true, "Functionality for non-completion is incomplete.");
+    _levelComplete = isComplete;
+    _randomFlag = isComplete;
+    _removeGameObject = true;
 
-    _levelComplete = true;
+    /* Update High Score */
+    if (isComplete){
+      widget.gameState.setUnlimitedHighScore(
+        levelKey: widget.gameType.name,
+        score: _levelNumber,
+      );
+    }
 
-    showCompletionCard(rating, completionTime);
+
+    /* Calculating Time */
+    final int time = completionTime.inMilliseconds;
+    final int minutes = (time / 60000).floor();
+    final int seconds = ((time % 60000) / 1000).floor();
+    final int milliseconds = ((time % 1000)/10).floor();
+
+    _levelCompletionTime = "${minutes.toString().padLeft(2, "0")}:${
+        seconds.toString().padLeft(2,"0")}:${
+        milliseconds.toString().padLeft(2,"0")}";
+
+    _levelRating = rating;
+
+    _controller.forward();
+    setState(() {});
 
   }
 
@@ -241,6 +258,21 @@ class _LevelPageState extends State<UnlimitedPage> with SingleTickerProviderStat
 
   }
 
+  void _replayLevel(){
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => UnlimitedPage(
+        gameType: widget.gameType,
+        gameState: widget.gameState,
+        screenRatio: widget.screenRatio,
+        hapticEngine: widget.hapticEngine,
+        audioPlayer: widget.audioPlayer,
+        colorPalette: widget.colorPalette,
+        storageService: widget.storageService,
+        settingsState: widget.settingsState,
+      )),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -322,10 +354,12 @@ class _LevelPageState extends State<UnlimitedPage> with SingleTickerProviderStat
                   child: Opacity(
                     opacity: _opacityAnimation.value,
                     child: LevelCompletionCard(
+                      randomFlag: _randomFlag,
                       isComplete: _levelComplete,
                       colorPalette: widget.colorPalette,
                       completionTime: _levelCompletionTime,
                       rating: _levelRating,
+                      replayLevelCallback: _replayLevel,
                       exitLevelCallback: _exitLevelPage,
                       nextLevelCallback: nextLevel,
                     ),
@@ -334,7 +368,7 @@ class _LevelPageState extends State<UnlimitedPage> with SingleTickerProviderStat
               },
               // child:
             ),
-           if (_levelComplete == false)
+           if (_removeGameObject == false)
            GameWidget( game: _game ),
 
           ],

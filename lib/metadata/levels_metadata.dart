@@ -34,6 +34,7 @@ Map levelsMetaData = {
   },
   1 : {
     "page_folder_name": "path_2",
+    "game_type" : GameType.bouncy,
     "hue": 235,
     "sections" : {
       0 : {

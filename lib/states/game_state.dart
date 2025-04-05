@@ -12,6 +12,7 @@ class GameState{
 
   final StorageService storageService;
   late Map<String, LevelState> _levelStates;
+  late Map<String, int> _unlimitedHighScores;
   VoidCallback? updateTrigger;
 
   GameState({
@@ -19,12 +20,50 @@ class GameState{
   });
 
 
-
   Future<void> initialize() async{
     _levelStates = {};
     // Get all the states present in the storage
     _levelStates = storageService.getLevelStates();
+    _unlimitedHighScores = storageService.getUnlimitedHighScores();
+    // print("Unlimited High Scores: $_unlimitedHighScores");
+  }
 
+  int getUnlimitedHighScore({
+    required String levelKey,
+  }){
+    int highScore = _unlimitedHighScores[levelKey] ?? 0;
+    return highScore;
+  }
+
+  void setUnlimitedHighScore({
+    required String levelKey,
+    required int score,
+  }){
+
+    final int currentScore = _unlimitedHighScores[levelKey] ?? 0;
+
+    /* if get better */
+    if (score <= currentScore){
+      return;
+    }
+    _unlimitedHighScores[levelKey] = score;
+
+    _setCachedUnlimitedHighScore(
+        levelKey: levelKey,
+        score: score
+    );
+
+  }
+
+  void _setCachedUnlimitedHighScore({
+    required String levelKey,
+    required int score,
+  }){
+    storageService.setUnlimitedHighScore(
+        key: levelKey,
+        value: score,
+        isLocal: true
+    );
   }
 
   void setUpdateTrigger(VoidCallback trigger){

@@ -8,12 +8,13 @@ class StorageService {
 
   late final Box<LevelState> _levelStates;
   late final Box<SettingsState> _settingState;
-
+  late final Box _unlimitedHighScores;
   StorageService();
 
   Future<void> initialize() async {
     _levelStates = await Hive.openBox<LevelState>('level_states');
     _settingState = await Hive.openBox<SettingsState>('setting_state');
+    _unlimitedHighScores = await Hive.openBox('unlimited_high_scores');
   }
 
   Map<String, LevelState> getLevelStates(){
@@ -38,6 +39,27 @@ class StorageService {
     isLocal = true
   }){
     _settingState.put('settings', value);
+  }
+
+  void setUnlimitedHighScore({
+    required String key,
+    required int value,
+    isLocal = true
+  }){
+    _unlimitedHighScores.put(key, value);
+  }
+
+  Map<String, int> getUnlimitedHighScores(){
+    Map<String, int> highScores = {};
+    for (var key in _unlimitedHighScores.keys){
+      highScores[key] = _unlimitedHighScores.get(key);
+    }
+    return highScores;
+  }
+
+
+  int getUnlimitedHighScore({required String key}){
+    return _unlimitedHighScores.get(key) ?? 0;
   }
 
   SettingsState getSettingsState(){

@@ -7,11 +7,13 @@ import 'package:flutter/material.dart';
 import 'package:amaze_game/pages/unlimited_page.dart';
 import 'package:amaze_game/logical/color_palette_logic.dart';
 
+import 'package:amaze_game/states/game_state.dart';
+
 import 'package:amaze_game/services/storage_service.dart';
 import 'package:amaze_game/services/audio_player_service.dart';
 import 'package:amaze_game/services/haptic_engine_service.dart';
 
-class UnlimitedCard extends StatelessWidget {
+class UnlimitedCard extends StatefulWidget {
 
   final double hue;
   final GameType gameType;
@@ -19,6 +21,7 @@ class UnlimitedCard extends StatelessWidget {
   final ColorPaletteLogic colorPalette;
   late ColorPaletteLogic cardPalette;
 
+  final GameState gameState;
   final SettingsState settingsState;
 
   final StorageService storageService;
@@ -30,6 +33,7 @@ class UnlimitedCard extends StatelessWidget {
     super.key,
     required this.hue,
     required this.gameType,
+    required this.gameState,
     required this.audioPlayer,
     required this.colorPalette,
     required this.hapticEngine,
@@ -42,37 +46,45 @@ class UnlimitedCard extends StatelessWidget {
   }
 
   @override
+  State<UnlimitedCard> createState() => _UnlimitedCardState();
+}
+
+class _UnlimitedCardState extends State<UnlimitedCard> {
+  @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(top: 15, bottom: 25.0),
       child: MaterialButton(
         onPressed: () {
 
-          hapticEngine.selection();
+          widget.hapticEngine.selection();
 
           /*Calculate Screen Ratio */
           double effectiveHeight = MediaQuery.of(context).size.height
-              - LevelAppBar.appBarHeight - 70;
+               - LevelAppBar.appBarHeight - 100;
           double screenRatio = effectiveHeight / MediaQuery.of(context).size.width;
-
+          print("Screen Ratio: $screenRatio");
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => UnlimitedPage(
-              gameType: gameType,
+              gameType: widget.gameType,
+              gameState: widget.gameState,
               screenRatio: screenRatio,
-              hapticEngine: hapticEngine,
-              audioPlayer: audioPlayer,
-              colorPalette: colorPalette,
-              storageService: storageService,
-              settingsState: settingsState,
+              hapticEngine: widget.hapticEngine,
+              audioPlayer: widget.audioPlayer,
+              colorPalette: widget.colorPalette,
+              storageService: widget.storageService,
+              settingsState: widget.settingsState,
             )),
-          );
+          ).whenComplete((){
+            setState(() {});
+          });
 
         },
-        color: cardPalette.activeElementBackground,
+        color: widget.cardPalette.activeElementBackground,
         shape: RoundedRectangleBorder(
           side: BorderSide(
-            color: cardPalette.activeElementText,
+            color: widget.cardPalette.activeElementText,
             strokeAlign: BorderSide.strokeAlignInside,
             width: 3,
           ),
@@ -99,7 +111,7 @@ class UnlimitedCard extends StatelessWidget {
                           fontSize: 32,
                           fontWeight: FontWeight.bold,
                           fontFamily: "Advent",
-                          color: cardPalette.activeElementText,
+                          color: widget.cardPalette.activeElementText,
                           letterSpacing: -1.2,
                           height: 1,
                         ),
@@ -107,7 +119,7 @@ class UnlimitedCard extends StatelessWidget {
                       Text.rich(
                         style: TextStyle(
                           fontFamily: "Advent",
-                          color: cardPalette.activeElementText,
+                          color: widget.cardPalette.activeElementText,
                           fontSize: 20,
                           letterSpacing: -1.2,
                           height: 1,
@@ -123,7 +135,7 @@ class UnlimitedCard extends StatelessWidget {
                               ),
                             ),
                             TextSpan(
-                              text: "20",
+                              text: "${widget.gameState.getUnlimitedHighScore(levelKey: widget.gameType.name)}",
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 letterSpacing: -1,
@@ -145,7 +157,7 @@ class UnlimitedCard extends StatelessWidget {
                   width: 240,
                 )
               ),
-              Align(
+              /*Align(
                 alignment: Alignment(1, 1.2),
                 child: IconButton(
                   onPressed: () {},
@@ -155,7 +167,7 @@ class UnlimitedCard extends StatelessWidget {
                     color: cardPalette.activeElementText,
                   )
                 ),
-              )
+              )*/
             ],
 
           ),

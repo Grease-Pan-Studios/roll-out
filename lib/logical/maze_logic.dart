@@ -27,6 +27,7 @@ class MazeLogic {
   Duration twoStarThreshold;
   Duration oneStarThreshold;
 
+  bool hasTimeLimit;
 
   int seedUsed;
 
@@ -53,6 +54,7 @@ class MazeLogic {
     required this.threeStarThreshold,
     required this.twoStarThreshold,
     required this.oneStarThreshold,
+    this.hasTimeLimit = false,
     this.cells = const [],
     this.cellSize = defaultCellSize,
     this.passageRatio = defaultPassageRatio,
@@ -67,8 +69,12 @@ class MazeLogic {
 
     assert( passageRatio <= 1 && passageRatio >= 0, 'Padding must be between 0 and 1');
     assert( wallRatio <= 1 && wallRatio >= 0, 'Wall width must be between 0 and 1');
-    // assert( )
     assert(passageRatio + wallRatio * 2 <= 1, 'Cant Have Negative Padding Dummy');
+
+    /* assert(
+      hasTimeLimit == false || timeLimit.inSeconds > 0,
+      "Set a time limit you lazy bum"
+    ); */
 
 
     if (cells.isEmpty){
@@ -230,96 +236,15 @@ class MazeLogic {
     return Vector2(internalRenderWidth,internalRenderHeight);
   }
 
-  Map<String, dynamic> toJson() {
-    return {
-      'width': width,
-      'height': height,
-      'seedUsed': seedUsed,
-      'startPositionX': startPositionX,
-      'startPositionY': startPositionY,
-      'goalPositionX': goalPositionX,
-      'goalPositionY': goalPositionY,
-      'threeStarThreshold': threeStarThreshold.inSeconds,
-      'twoStarThreshold': twoStarThreshold.inSeconds,
-      'oneStarThreshold': oneStarThreshold.inSeconds,
-      'cellSize': cellSize,
-      'wallRatio': wallRatio,
-      'passageRatio': passageRatio,
-      'ballRestitution': ballRestitution,
-      'cells': cells.map((cell) => cell.toJson()).toList(),
-    };
-  }
-
-
-  factory MazeLogic.fromJson(
-      Map<String, dynamic> json
-  ){
-    return MazeLogic(
-        width: json['width'],
-        height: json['height'],
-        seedUsed: json['seedUsed'],
-        startPositionX: json['startPositionX'],
-        startPositionY: json['startPositionY'],
-        goalPositionX: json['goalPositionX'],
-        goalPositionY: json['goalPositionY'],
-        threeStarThreshold: Duration(seconds: json['threeStarThreshold']),
-        twoStarThreshold: Duration(seconds: json['twoStarThreshold']),
-        oneStarThreshold: Duration(seconds: json['oneStarThreshold']),
-        cellSize: json['cellSize'] ?? defaultCellSize,
-        wallRatio: json['wallRatio'] ?? defaultWallRatio,
-        passageRatio: json['passageRatio'] ?? defaultPassageRatio,
-        ballRestitution: json['ballRestitution'] ?? defaultBallRestitution,
-        cells: (json['cells'] as List).map((cell) => CellLogic.fromJson(cell)).toList(),
-
-    );
-  }
-
-
-
-  // Add this helper method to return only connected neighbours.
-  List<int> getConnectedNeighbours(int index) {
-    List<int> coords = indexToCoordinates(index);
-    int x = coords[0];
-    int y = coords[1];
-    List<int> neighbours = [];
-
-    // Left neighbour
-    if (x > 0) {
-      CellLogic current = getCellAt(x, y);
-      CellLogic leftCell = getCellAt(x - 1, y);
-      if (current.leftConnection && leftCell.rightConnection) {
-        neighbours.add(index - 1);
-      }
-    }
-    // Right neighbour
-    if (x < width - 1) {
-      CellLogic current = getCellAt(x, y);
-      CellLogic rightCell = getCellAt(x + 1, y);
-      if (current.rightConnection && rightCell.leftConnection) {
-        neighbours.add(index + 1);
-      }
-    }
-    // Top neighbour
-    if (y > 0) {
-      CellLogic current = getCellAt(x, y);
-      CellLogic topCell = getCellAt(x, y - 1);
-      if (current.topConnection && topCell.bottomConnection) {
-        neighbours.add(index - width);
-      }
-    }
-    // Bottom neighbour
-    if (y < height - 1) {
-      CellLogic current = getCellAt(x, y);
-      CellLogic bottomCell = getCellAt(x, y + 1);
-      if (current.bottomConnection && bottomCell.topConnection) {
-        neighbours.add(index + width);
-      }
-    }
-    return neighbours;
-  }
-
   // Method to calculate path metrics: distance and number of turns.
-  void estimateTimeThreshold(GameType gameType) {
+  void estimateTimeThreshold({
+    required GameType gameType,
+    required double difficulty,
+  }) {
+
+    assert(difficulty >= 0 && difficulty <= 1,
+      "Difficulty must be between 0 and 1");
+
     // Convert start and goal positions to indices.
     int startIndex = startPositionX + startPositionY * width;
     int goalIndex = goalPositionX + goalPositionY * width;
@@ -395,87 +320,139 @@ class MazeLogic {
     // Distance in cells is the number of steps between start and goal.
     int steps = pathIndices.length - 1;
 
+    double stepBuffer = 0.1; // For easy
+    int fullBuffer = 1; // For easy
 
-    if (gameType == GameType.standard){
-      double stepBuffer = 0.1; // For easy
-      int fullBuffer = 1; // For easy
+    if (GameType.standard == gameType) {
+      stepBuffer = 0.1 + (0.2 - 0.1) * difficulty; // For easy 0.1, for hard 0.2
+      fullBuffer = 1; // For easy
 
-      double timePerStep1 = 0.48 + stepBuffer;
-      double timePerTurn1 = 0.78 + stepBuffer;
+    } else if (GameType.bouncy == gameType){
+      stepBuffer = 0.18 + (0.25 - 0.18) * difficulty; // For medium  //0.25; // For easy
+      fullBuffer = 1; // For easy
 
-      double timePerStep2 = 0.38 + stepBuffer;
-      double timePerTurn2 = 0.68 + stepBuffer;
+    } else if (GameType.lookingGlass == gameType){
+      stepBuffer = 0.2 + (0.3 - 0.2) * difficulty; // For easy // 0.15; // For medium  //
+      fullBuffer = 1; // For easy
 
-      double timePerStep3 = 0.28 + stepBuffer;
-      double timePerTurn3 = 0.53 + stepBuffer;
+    } else if (GameType.blackBox == gameType){
+      stepBuffer = 0.2 + (0.3 - 0.2) * difficulty; // For easy // 0.15; // For medium  //
+      fullBuffer = 1; // For easy
 
-      int threeStarThreshold = (timePerStep3 * steps + timePerTurn3 * turns).toInt() + fullBuffer;
-      int twoStarThreshold = (timePerStep2 * steps + timePerTurn2 * turns).toInt() + fullBuffer;
-      int oneStarThreshold = (timePerStep1 * steps + timePerTurn1 * turns).toInt() + fullBuffer;
-
-      print("threeStarThreshold: $threeStarThreshold");
-      print("twoStarThreshold: $twoStarThreshold");
-      print("oneStarThreshold: $oneStarThreshold");
-
-      this.oneStarThreshold = Duration(seconds: oneStarThreshold);
-      this.twoStarThreshold = Duration(seconds: twoStarThreshold);
-      this.threeStarThreshold = Duration(seconds: threeStarThreshold);
-    }else if (gameType == GameType.bouncy){
-
-      double stepBuffer = 0.18; // For medium  //0.25; // For easy
-      int fullBuffer = 1; // For easy
-
-      double timePerStep1 = 0.48 + stepBuffer;
-      double timePerTurn1 = 0.88 + stepBuffer;
-
-      double timePerStep2 = 0.38 + stepBuffer;
-      double timePerTurn2 = 0.78 + stepBuffer;
-
-      double timePerStep3 = 0.28 + stepBuffer;
-      double timePerTurn3 = 0.63 + stepBuffer;
-
-      int threeStarThreshold = (timePerStep3 * steps + timePerTurn3 * turns).toInt() + fullBuffer;
-      int twoStarThreshold = (timePerStep2 * steps + timePerTurn2 * turns).toInt() + fullBuffer;
-      int oneStarThreshold = (timePerStep1 * steps + timePerTurn1 * turns).toInt() + fullBuffer;
-
-      print("threeStarThreshold: $threeStarThreshold");
-      print("twoStarThreshold: $twoStarThreshold");
-      print("oneStarThreshold: $oneStarThreshold");
-
-      this.oneStarThreshold = Duration(seconds: oneStarThreshold);
-      this.twoStarThreshold = Duration(seconds: twoStarThreshold);
-      this.threeStarThreshold = Duration(seconds: threeStarThreshold);
-
-
-    }else if (GameType.lookingGlass == gameType){
-
-      double stepBuffer = 0.2; // For easy // 0.15; // For medium  //
-      int fullBuffer = 1; // For easy
-
-      double timePerStep1 = 0.48 + stepBuffer;
-      double timePerTurn1 = 0.88 + stepBuffer;
-
-      double timePerStep2 = 0.38 + stepBuffer;
-      double timePerTurn2 = 0.78 + stepBuffer;
-
-      double timePerStep3 = 0.28 + stepBuffer;
-      double timePerTurn3 = 0.63 + stepBuffer;
-
-      int threeStarThreshold = (timePerStep3 * steps + timePerTurn3 * turns).toInt() + fullBuffer;
-      int twoStarThreshold = (timePerStep2 * steps + timePerTurn2 * turns).toInt() + fullBuffer;
-      int oneStarThreshold = (timePerStep1 * steps + timePerTurn1 * turns).toInt() + fullBuffer;
-
-      print("threeStarThreshold: $threeStarThreshold");
-      print("twoStarThreshold: $twoStarThreshold");
-      print("oneStarThreshold: $oneStarThreshold");
-
-      this.oneStarThreshold = Duration(seconds: oneStarThreshold);
-      this.twoStarThreshold = Duration(seconds: twoStarThreshold);
-      this.threeStarThreshold = Duration(seconds: threeStarThreshold);
     }
 
+    double timePerStep1 = 0.48 + stepBuffer;
+    double timePerTurn1 = 0.78 + stepBuffer;
+
+    double timePerStep2 = 0.38 + stepBuffer;
+    double timePerTurn2 = 0.68 + stepBuffer;
+
+    double timePerStep3 = 0.28 + stepBuffer;
+    double timePerTurn3 = 0.53 + stepBuffer;
+
+    int threeStarThreshold = (timePerStep3 * steps
+      + timePerTurn3 * turns).toInt() + fullBuffer;
+    int twoStarThreshold = (timePerStep2 * steps
+      + timePerTurn2 * turns).toInt() + fullBuffer;
+    int oneStarThreshold = (timePerStep1 * steps
+      + timePerTurn1 * turns).toInt() + fullBuffer;
+
+    /*print("threeStarThreshold: $threeStarThreshold");
+      print("twoStarThreshold: $twoStarThreshold");
+      print("oneStarThreshold: $oneStarThreshold");*/
+
+    this.oneStarThreshold = Duration(seconds: oneStarThreshold);
+    this.twoStarThreshold = Duration(seconds: twoStarThreshold);
+    this.threeStarThreshold = Duration(seconds: threeStarThreshold);
+
+  }
 
 
+  Map<String, dynamic> toJson() {
+    return {
+      'width': width,
+      'height': height,
+      'seedUsed': seedUsed,
+      'startPositionX': startPositionX,
+      'startPositionY': startPositionY,
+      'goalPositionX': goalPositionX,
+      'goalPositionY': goalPositionY,
+      'threeStarThreshold': threeStarThreshold.inSeconds,
+      'twoStarThreshold': twoStarThreshold.inSeconds,
+      'oneStarThreshold': oneStarThreshold.inSeconds,
+      'cellSize': cellSize,
+      'wallRatio': wallRatio,
+      'passageRatio': passageRatio,
+      'ballRestitution': ballRestitution,
+      'cells': cells.map((cell) => cell.toJson()).toList(),
+    };
+  }
+
+
+
+  factory MazeLogic.fromJson(
+      Map<String, dynamic> json
+  ){
+    return MazeLogic(
+        width: json['width'],
+        height: json['height'],
+        seedUsed: json['seedUsed'],
+        startPositionX: json['startPositionX'],
+        startPositionY: json['startPositionY'],
+        goalPositionX: json['goalPositionX'],
+        goalPositionY: json['goalPositionY'],
+        threeStarThreshold: Duration(seconds: json['threeStarThreshold']),
+        twoStarThreshold: Duration(seconds: json['twoStarThreshold']),
+        oneStarThreshold: Duration(seconds: json['oneStarThreshold']),
+        cellSize: json['cellSize'] ?? defaultCellSize,
+        wallRatio: json['wallRatio'] ?? defaultWallRatio,
+        passageRatio: json['passageRatio'] ?? defaultPassageRatio,
+        ballRestitution: json['ballRestitution'] ?? defaultBallRestitution,
+        cells: (json['cells'] as List).map((cell) => CellLogic.fromJson(cell)).toList(),
+
+    );
+  }
+
+  // Add this helper method to return only connected neighbours.
+  List<int> getConnectedNeighbours(int index) {
+    List<int> coords = indexToCoordinates(index);
+    int x = coords[0];
+    int y = coords[1];
+    List<int> neighbours = [];
+
+    // Left neighbour
+    if (x > 0) {
+      CellLogic current = getCellAt(x, y);
+      CellLogic leftCell = getCellAt(x - 1, y);
+      if (current.leftConnection && leftCell.rightConnection) {
+        neighbours.add(index - 1);
+      }
+    }
+    // Right neighbour
+    if (x < width - 1) {
+      CellLogic current = getCellAt(x, y);
+      CellLogic rightCell = getCellAt(x + 1, y);
+      if (current.rightConnection && rightCell.leftConnection) {
+        neighbours.add(index + 1);
+      }
+    }
+    // Top neighbour
+    if (y > 0) {
+      CellLogic current = getCellAt(x, y);
+      CellLogic topCell = getCellAt(x, y - 1);
+      if (current.topConnection && topCell.bottomConnection) {
+        neighbours.add(index - width);
+      }
+    }
+    // Bottom neighbour
+    if (y < height - 1) {
+      CellLogic current = getCellAt(x, y);
+      CellLogic bottomCell = getCellAt(x, y + 1);
+      if (current.bottomConnection && bottomCell.topConnection) {
+        neighbours.add(index + width);
+      }
+    }
+    return neighbours;
   }
 
 

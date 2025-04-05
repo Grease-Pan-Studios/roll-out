@@ -112,6 +112,7 @@ class _PathPageState extends State<PathPage> {
                   UnlimitedCard(
                     hue: widget.pathwayLogic.hue,
                     gameType: widget.pathwayLogic.gameType,
+                    gameState: widget.gameState,
                     colorPalette: widget.colorPalette,
                     hapticEngine: widget.hapticEngine,
                     storageService: widget.storageService,

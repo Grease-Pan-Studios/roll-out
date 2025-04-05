@@ -15,6 +15,7 @@ class MazeGenerator{
         int? startY,
         int? goalX,
         int? goalY,
+        bool hasTimeLimit = false,
         required double ballRestitution,
         double? cellSize,
         double? passageRatio,
@@ -39,6 +40,7 @@ class MazeGenerator{
     final MazeLogic maze = MazeLogic(
         width: sizeX,
         height:  sizeY,
+        hasTimeLimit: hasTimeLimit,
         startPositionX: startPositionX,
         startPositionY: startPositionY,
         goalPositionX: goalPositionX,
